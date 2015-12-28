@@ -42,10 +42,11 @@ final class Sistema {
      */
     public static function crearAplicacion($rutaConfiguracion){        
         self::$rutaSistema = realpath(__DIR__);
-        self::cargarGlobales();        
-        self::cargarAlias();        
+        self::cargarGlobales();
+        self::cargarAlias();
         self::importar('!sistema.web.CAplicacionWeb');        
         self::$apliacion = CAplicacionWeb::getInstancia($rutaConfiguracion);
+        self::$apliacion->inicializar();
         return self::$apliacion;
     } 
     

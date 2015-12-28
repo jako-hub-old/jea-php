@@ -8,8 +8,18 @@
  * @copyright (c) 2015, jakop
  */
 final class CAplicacionWeb {
+    
+    private $mRutas;
    
-    private function __construct($rutaConfiguraciones){}
+    private function __construct($rutaConfiguraciones){
+        Sistema::importar('!sistema.manejadores.CMRutas');
+        $this->mRutas = new CMRutas();
+        echo $this->mRutas->crearUrl(array('site/index', 'ID'=>'5'));
+        #cargar manejador de rutas
+        #definir rutas base
+        #asignar alias al sistema
+        #cargar el id de la aplicación
+    }
     
     /**
      * Este método es la única manera de obtener una instancia de la aplicación 
@@ -23,6 +33,13 @@ final class CAplicacionWeb {
             $instanciaAplicacion = new CAplicacionWeb($rutaConfiguraciones);
         }
         return $instanciaAplicacion;
+    }
+    
+    public function inicializar(){
+        #cargar la configuración        
+        #cargar los imports de la configuración
+        #cargar el autoloader
+        #inicializar los manejadores
     }
     
     public function iniciar(){
