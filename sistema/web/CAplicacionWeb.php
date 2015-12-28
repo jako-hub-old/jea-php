@@ -8,17 +8,47 @@
  * @copyright (c) 2015, jakop
  */
 final class CAplicacionWeb {
+    private $ID;
+    private $nombre;
+    private $charset = 'utf-8';    
+    private $rutaConf;
+    private $configuraciones = [];
+    private $rutaPlantillas;
+    private $tema;
+    private $ruta;
+    private $urlBase;
+    private $rutaBase;
+    private $controlador;
+    private $modulo;
     
+    /***************************************************************
+     *  Manejadores                                                *
+     ***************************************************************
+     * Los manejadores son clases encargadas de funcionalidades    *
+     * muy especificas                                             *
+     ***************************************************************/
+    private $mRecursos;
     private $mRutas;
+    private $mError;
+    private $mExcepcion;
+    private $mRegistro;
+    private $mSesion;
+    
    
     private function __construct($rutaConfiguraciones){
+        $this->rutaConf = $rutaConfiguraciones;
+        $this->cargarConfiguracion();
+        
         Sistema::importar('!sistema.manejadores.CMRutas');
         $this->mRutas = new CMRutas();
-        echo $this->mRutas->crearUrl(array('site/index', 'ID'=>'5'));
-        #cargar manejador de rutas
-        #definir rutas base
-        #asignar alias al sistema
-        #cargar el id de la aplicación
+        $this->urlBase = $this->mRutas->getUrlBase();
+        $this->rutaBase = $this->mRutas->getRutaBase();
+        Sistema::setAlias(array(
+            '!aplicacion' => $this->rutaBase . DS . 'protegido',
+            '!modulos' => $this->rutaBase . DS . 'protegido' . DS . 'modulos',
+            '!componentes' => $this->urlBase . DS .'protegido' . DS . 'componentes',
+            '!raiz' => $this->urlBase,
+        ));
     }
     
     /**
@@ -35,15 +65,66 @@ final class CAplicacionWeb {
         return $instanciaAplicacion;
     }
     
+    /**
+     * Esta función inicializa los parámetros necesarios para que funcione la 
+     * aplicación
+     */
     public function inicializar(){
-        #cargar la configuración        
-        #cargar los imports de la configuración
-        #cargar el autoloader
+        echo "inicializando...<br>";
+        if(isset($this->configuraciones['importar'])){
+            $this->prepararImportaciones($this->configuraciones['importar']);
+        }
+        Sistema::importar('!sistema.utilidades.Autocarga');
         #inicializar los manejadores
+        $this->ID = hash('md5', $this->nombre);
     }
     
+    /**
+     * Esta función inica la aplicación
+     */
     public function iniciar(){
+        echo "<br>iniciando...";
+    }
+    
+    /**
+     * Esta función carga el archivo de configuraciones
+     * @throws Exception si no se encuentra creado el archivo de configuraciones
+     * en la aplicación
+     */
+    private function cargarConfiguracion(){
+        if(!file_exists(realpath($this->rutaConf))){
+            throw new Exception("No se encuentra el archivo de configuración");
+        }
         
+        $this->configuraciones = include realpath($this->rutaConf);
+        if(count($this->configuraciones) == 0){
+            throw new Exception("No hay configuraciones definidas para la aplicación");
+        }
+        $this->setearAtributos($this->configuraciones);
+    }
+    
+    /**
+     * Esta función se encarga de setear cada uno de los atributos de la
+     * aplicación que estén definidos en el archivo de configuraciones (posición: aplicacion)
+     * @param array $atributos
+     */
+    private function setearAtributos($atributos = []){
+        foreach($atributos AS $nombre=>$valor){
+            if(property_exists($this, $nombre)){
+                $this->$nombre = $valor;
+            }
+        }
+    }
+    
+    /**
+     * Esta función prepara la constante con los imports extra definidos 
+     * en la configuración de la aplicación
+     * @param array $aImportar
+     */
+    private function prepararImportaciones($aImportar = []){
+        if(count($aImportar) > 0){
+            define('__IMPORTACIONES__', implode(';', $aImportar));
+        }
     }
     
 }
