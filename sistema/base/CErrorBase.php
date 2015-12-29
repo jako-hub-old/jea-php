@@ -62,6 +62,7 @@ abstract class CErrorBase {
         if(is_array($parametros) && count($parametros)){
             $this->setParametros($parametros);
         }
+        $this->rutaVistas = '!sistema.vistas.errores';
     }
     
     /**
@@ -70,7 +71,7 @@ abstract class CErrorBase {
      */
     private function setParametros($p = []){
         foreach ($p AS $n=>$v){
-            if(isset($this->$n)){
+            if(property_exists($this, $n)){
                 $this->$n = $v;
             }
         }        
@@ -81,12 +82,16 @@ abstract class CErrorBase {
      * @param string $vista
      * @return boolean si logra renderizar algo true
      */
-    protected function renderError($vista = ''){
-        $ruta = realpath(Sistema::resolverRuta($this->rutaVistas).DS.$vista);
+    protected function mostrarError($vista = ''){
+        $ruta = realpath(Sistema::resolverRuta($this->rutaVistas).DS.$vista.'.php');
         if($ruta === false){
             return false;
         }
-        echo $this->cargarVista($vista);
+        
+        $this->contenido = $this->cargarVista($ruta);
+        Sistema::apl()->mRecursos->incluirRecursos($this->contenido);
+        echo $this->contenido;
+        
         return true;
     }
     
@@ -108,8 +113,21 @@ abstract class CErrorBase {
      * @return string
      */
     private function verError($archivo, $linea){
-        $html = '';
-        return $html;
+        if(file_exists($archivo) && ($lineas = @file($archivo)) !== false && 
+                ($totalLineas = count($lineas)) >= $linea){
+            $lineaConError = $linea - 1;
+            $limiteSup = ($lineaConError - 10 < 0) ? 0 : $lineaConError - 10;
+            $limiteInf = ($lineaConError + 10 > $totalLineas)? $totalLineas : $lineaConError + 10;            
+            for($cont = $limiteSup; $cont < $limiteInf; $cont ++) {
+                $numLinea = '<span class="linea-codigo">' . str_pad(($cont + 1), 3, '0', STR_PAD_LEFT) . '</span>';
+                if($cont === $lineaConError){
+                    $codigo .= '<span class="linea-con-error">'.$numLinea.  htmlentities($lineas[$cont]) . '</span>';
+                }else{
+                    $codigo .= $numLinea.  htmlentities($lineas[$cont]);
+                }
+            }
+        }
+        return '<pre>'.$codigo.'</pre>';
     }
     
     

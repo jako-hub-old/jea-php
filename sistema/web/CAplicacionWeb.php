@@ -7,6 +7,13 @@
  * @version 1.0.0
  * @copyright (c) 2015, jakop
  */
+/**
+ * @property CMRecursos $mRecursos Clase manejadora de recursos
+ * @property string $rutaBase Ruta base de la aplicación
+ * @property string $urlBase Url base de la aplicación
+ * @property string $charset codificación manejada por la aplicación
+ */
+
 final class CAplicacionWeb {
     private $ID;
     private $nombre;
@@ -46,8 +53,9 @@ final class CAplicacionWeb {
         Sistema::setAlias(array(
             '!aplicacion' => $this->rutaBase . DS . 'protegido',
             '!modulos' => $this->rutaBase . DS . 'protegido' . DS . 'modulos',
-            '!componentes' => $this->urlBase . DS .'protegido' . DS . 'componentes',
-            '!raiz' => $this->urlBase,
+            '!componentes' => $this->rutaBase. DS .'protegido' . DS . 'componentes',
+            '!raiz' => $this->rutaBase,
+            '!publico' => $this->rutaBase. DS . 'publico',
         ));
     }
     
@@ -70,12 +78,11 @@ final class CAplicacionWeb {
      * aplicación
      */
     public function inicializar(){
-        echo "inicializando...<br>";
         if(isset($this->configuraciones['importar'])){
             $this->prepararImportaciones($this->configuraciones['importar']);
         }
-        Sistema::importar('!sistema.utilidades.Autocarga');
-        #inicializar los manejadores
+        Sistema::importar('!sistema.utilidades.Autocarga');        
+        $this->iniciarManejadoresDeError();
         $this->ID = hash('md5', $this->nombre);
     }
     
@@ -83,7 +90,7 @@ final class CAplicacionWeb {
      * Esta función inica la aplicación
      */
     public function iniciar(){
-        echo "<br>iniciando...";
+        #logica de aplicación iniciada
     }
     
     /**
@@ -127,4 +134,58 @@ final class CAplicacionWeb {
         }
     }
     
+    /**
+     * Esta función inicializa los manejadores de errores
+     */
+    private function iniciarManejadoresDeError(){
+        $this->mError = new CMError();
+        set_exception_handler(array($this->mError, 'tratarExcepcion'));
+        set_error_handler(array($this->mError, 'tratarError'), error_reporting());        
+    }    
+    
+    /**
+     * Esta función retorna un atributo de la aplicación
+     * @param string $nombre
+     * @return mixed
+     */
+    public function __get($nombre) {
+        if(method_exists($this, 'get'.  ucfirst($nombre))){
+            return $this->{'get'.  ucfirst($nombre)}();
+        }
+    }
+    
+    /**
+     * Esta función retorna el charset que maneja la aplicación
+     * @return string
+     */
+    public function getCharset(){
+        return $this->charset;
+    }
+    
+    /**
+     * Esta función retorna la instancia del manejador de recursos
+     * @return CMRecursos
+     */
+    public function getMRecursos(){
+        if($this->mRecursos === null){
+            $this->mRecursos = new CMRecursos();
+        }
+        return $this->mRecursos;
+    }
+    
+    /**
+     * Esta función retorna la ruta base de la aplicación
+     * @return string
+     */
+    public function getRutaBase(){
+        return $this->rutaBase;
+    }
+    
+    /**
+     * Esta función retorna la url base de la aplicación
+     * @return string
+     */
+    public function getUrlBase(){
+        return $this->urlBase;
+    }
 }
