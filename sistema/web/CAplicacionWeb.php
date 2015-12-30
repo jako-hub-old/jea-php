@@ -12,6 +12,13 @@
  * @property string $rutaBase Ruta base de la aplicación
  * @property string $urlBase Url base de la aplicación
  * @property string $charset codificación manejada por la aplicación
+ * @property string $ID Id de la aplicación
+ * @property string $rutaPlantillas ruta de las plantillas por defecto de la aplicación
+ * @property CTema $tema tema cargado en la aplicación
+ * @property string $ruta ruta solicitada para la aplicación
+ * @property CControlador $controlador controlador cargado en la aplicación
+ * @property CModulo $modulo modulo cargado en la aplicación
+ * @property CMSesion $mSesion Instancia del manejador de sesiones de la aplicación
  */
 
 final class CAplicacionWeb {
@@ -81,9 +88,10 @@ final class CAplicacionWeb {
         if(isset($this->configuraciones['importar'])){
             $this->prepararImportaciones($this->configuraciones['importar']);
         }
-        Sistema::importar('!sistema.utilidades.Autocarga');        
+        Sistema::importar('!sistema.utilidades.Autocarga');
         $this->iniciarManejadoresDeError();
         $this->ID = hash('md5', $this->nombre);
+        $this->mSesion = new CMSesion();
     }
     
     /**
@@ -154,6 +162,12 @@ final class CAplicacionWeb {
         }
     }
     
+    /***************************************************************
+     *  A partir de aquí se encuentran todos los atributos         *
+     *  privados a los que solo se les permite lectura a través    *
+     *  de un método get                                           *
+     ***************************************************************/
+    
     /**
      * Esta función retorna el charset que maneja la aplicación
      * @return string
@@ -187,5 +201,21 @@ final class CAplicacionWeb {
      */
     public function getUrlBase(){
         return $this->urlBase;
+    }
+    
+    /**
+     * Esta función retorna el id generado para la aplicación
+     * @return string
+     */
+    public function getID(){
+        return $this->ID;
+    }
+    
+    /**
+     * Esta función retorna el manejador de sesión de la aplicación
+     * @return CMSesion
+     */
+    public function getMSesion(){
+        return $this->mSesion;
     }
 }
