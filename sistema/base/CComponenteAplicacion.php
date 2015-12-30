@@ -59,4 +59,14 @@ abstract class CComponenteAplicacion {
         }
     }
     
+    /**
+     * Esta función puede ser usada para inicializar valores antes de iniciar la aplicación
+     */
+    public function antesDeIniciar(){}
+    
+    /**
+     * Todo componente de aplicación deberá tener una función que no inicie
+     */
+    public abstract function iniciar();    
+    
 }

@@ -113,6 +113,7 @@ abstract class CErrorBase {
      * @return string
      */
     private function verError($archivo, $linea){
+        $codigo = '';
         if(file_exists($archivo) && ($lineas = @file($archivo)) !== false && 
                 ($totalLineas = count($lineas)) >= $linea){
             $lineaConError = $linea - 1;

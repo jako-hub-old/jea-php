@@ -14,12 +14,14 @@ class CMError {
     
     public function tratarError($no, $mensaje, $archivo, $linea){
         new CExError($no, $mensaje, $archivo, $linea);
+        Sistema::fin();
     }
     
     public function tratarExcepcion(Exception $e){
         // la clase CException ya se encarga de tomar los
         // datos necesarios de la excepción arrojada y mostrarlos
         new CExcepcion($e);
+        Sistema::fin();
     }
     
 }

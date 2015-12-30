@@ -27,12 +27,12 @@ class CMRecursos {
      * Scripts registrados para ser mostrados en el cliente
      * @var string 
      */
-    private $scriptsEnCliente;
+    private $scriptsEnCliente = [];
     /**
      * Estilos registrados para ser mostradose en el cliente
      * @var string 
      */
-    private $estilosEnCliente;
+    private $estilosEnCliente = [];
     
     /**
      * Todos los recursos que se registran
@@ -266,7 +266,7 @@ class CMRecursos {
         if(!file_exists($destino) && !is_dir($destino)){ mkdir($destino); }
         
         $archivos = scandir($fuente);        
-        
+        $guardado = false;
         foreach ($archivos AS $archivo){
             if(!is_file($fuente.DS.$archivo) || file_exists($destino.DS.$archivo)){ continue; }
             $guardado = copy($fuente.DS.$archivo, $destino.DS.$archivo);

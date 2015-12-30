@@ -48,7 +48,9 @@
                 echo $this->verError($this->archivo, $this->linea);
                 ?>
                 <h3 class="titulo-rastreo">Rastreo del error</h3>
+                <?php $conteo = 0; ?>
                 <?php foreach($this->rastreo AS $rastro): ?>
+                <?php if(!isset($rastro['file'])){ continue; }?>
                 <div class="rastreo">
                     <h4>#<?php echo ++ $conteo; ?> <small><?php echo $rastro['file']; ?></small></h4>
                     <div class="archivo-rastreo" style="display: none;">

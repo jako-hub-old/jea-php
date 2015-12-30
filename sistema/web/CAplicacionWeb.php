@@ -19,6 +19,9 @@
  * @property CControlador $controlador controlador cargado en la aplicación
  * @property CModulo $modulo modulo cargado en la aplicación
  * @property CMSesion $mSesion Instancia del manejador de sesiones de la aplicación
+ * @property string $nombreControlador Nombre del controlador invocado
+ * @property string $nombreAccion Nombre de la acción invocada
+ * @property string $nombreModulo Nombre del módulo invocado
  */
 
 final class CAplicacionWeb {
@@ -34,7 +37,9 @@ final class CAplicacionWeb {
     private $rutaBase;
     private $controlador;
     private $modulo;
-    
+    private $nombreControlador = 'principal';
+    private $nombreAccion = 'inicio';
+    private $nombreModulo = null;
     /***************************************************************
      *  Manejadores                                                *
      ***************************************************************
@@ -98,7 +103,58 @@ final class CAplicacionWeb {
      * Esta función inica la aplicación
      */
     public function iniciar(){
-        #logica de aplicación iniciada
+        $this->prepararRuta();
+        $this->controlador = $this->cargarControlador();
+        $this->controlador->antesDeIniciar();
+        $this->controlador->iniciar();
+        
+    }
+    
+    /**
+     * Esta función valida si existe un controlador y retorna la instancia de el controlador
+     * solicitado
+     * @return \CControlador
+     * @throws CExAplicacion si ocurre algun inconveniente localizando el controlador
+     */
+    private function cargarControlador(){
+        $rutaControlador = Sistema::resolverRuta('!aplicacion.controladores');
+        $nombreArchivo = 'Ctrl'.ucfirst($this->nombreControlador);
+        $archivoAImportar = $rutaControlador.DS.$nombreArchivo.'.php';
+        
+        if(!file_exists($rutaControlador) && !is_dir($rutaControlador)){
+            throw new CExAplicacion("No existe la ruta de los controladores");
+        }
+        
+        # Lógica en caso de que el archivo controlador no exista
+        if(!file_exists($archivoAImportar)){
+            throw new CExAplicacion("No existe el controlador '$nombreArchivo'");
+        }
+        
+        Sistema::importar($archivoAImportar, false);
+        # logica en caso de que la clase controlador no exista
+        if(!class_exists($nombreArchivo)){
+            throw new CExAplicacion("No existe la clase Ctrl'$nombreArchivo'");
+        }
+        
+        $instancia = new $nombreArchivo($this->nombreControlador, $this->nombreAccion);
+        if(!$instancia instanceof CControlador){
+            throw new CExAplicacion("El controlador cargado no es valido");
+        }
+        return $instancia;
+    }
+    
+    /**
+     * Esta función simplemente filtra la variable r de get para buscar el controlador
+     * y la acción solicitada
+     */
+    private function prepararRuta(){
+        $get = filter_input_array(INPUT_GET);
+        if(isset($get['r'])){
+            $partes = explode('/', $get['r']);
+            $this->nombreControlador = isset($partes[0]) && !empty($partes[0])? $partes[0] : $this->nombreControlador;
+            $this->nombreAccion = isset($partes[1]) && !empty($partes[0])? $partes[1] : $this->nombreAccion;
+            $this->nombreModulo = isset($partes[1]) && !empty($partes[0])? $partes[1] : $this->nombreModulo;
+        }
     }
     
     /**
@@ -149,7 +205,20 @@ final class CAplicacionWeb {
         $this->mError = new CMError();
         set_exception_handler(array($this->mError, 'tratarExcepcion'));
         set_error_handler(array($this->mError, 'tratarError'), error_reporting());        
-    }    
+    }
+    
+    /***************************************************************
+     ***********             Utulidades                   **********
+     ***************************************************************/
+    
+    /**
+     * Esta función es un atajo para crear rutas
+     * @param array $ruta
+     * @return string
+     */
+    public function crearUrl($ruta){
+        return $this->mRutas->crearUrl($ruta);
+    }
     
     /**
      * Esta función retorna un atributo de la aplicación
@@ -160,7 +229,7 @@ final class CAplicacionWeb {
         if(method_exists($this, 'get'.  ucfirst($nombre))){
             return $this->{'get'.  ucfirst($nombre)}();
         }
-    }
+    }    
     
     /***************************************************************
      *  A partir de aquí se encuentran todos los atributos         *
@@ -217,5 +286,13 @@ final class CAplicacionWeb {
      */
     public function getMSesion(){
         return $this->mSesion;
+    }
+    
+    /**
+     * Esta función retorna el manejador de rutas
+     * @return CMRutas
+     */
+    public function getMRutas(){
+        return $this->mRutas;
     }
 }
