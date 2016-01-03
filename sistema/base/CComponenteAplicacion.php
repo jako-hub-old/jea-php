@@ -4,7 +4,7 @@
  * no es instancia de esta clase no será aceptado como componente
  * @package sistema.base
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  */
 
@@ -15,12 +15,6 @@ abstract class CComponenteAplicacion {
      * @var string 
      */
     protected $ID;
-   
-    /**
-     * Esta función debe estar definida en todo componente
-     * y su utilidad es para inicializar valores de todo componente
-     */
-    public abstract function init();
     
     /**
      * Esta es la función magica para get, solo retornará atributos existentes
@@ -30,7 +24,7 @@ abstract class CComponenteAplicacion {
      * @return mixed
      */
     public function __get($nombre) {
-        return isset($this->$nombre)? $this->$nombre : null;
+        return property_exists($this, $nombre)? $this->$nombre : null;
     }
     
     /**

@@ -1,0 +1,21 @@
+Version 1.0.1 Enero 03 de 2016
+------------------------------
+- Mod#1		: (CAplicacionWeb) Se agrega el componente de base de datos y la carga configuraciones (Jako)
+- Mod#2 	: (CComponenteAplicacion) Se  remueve la función init (Jako)
+- Mod#3		: (CAccion) Se remueve la función init (Jako)
+- Mod#4		: (CControlador) Se agrega el manejo de temas al cargar las vistas y layouts (Jako)
+- New#1		: (CConectorBaseDeDatos) Super para conectores de base de datos (Jako)
+- New#2		: (CControladorBaseDeDatos) Super para controladores de base de datos (Jako)
+- New#3		: (IConectorBaseDeDatos) Interfaz para conectores de base de datos (Jako)
+- New#4		: (ICriterios) Interfaz para criterios de base de datos (Jako)
+- New#5		: (CConectorMySql) Conector especifico de MySql (Jako)
+- New#6		: (CMySqlDriver) Controlador especifico de MySql (Jako)
+- New#7		: (CBaseModelo) Base para todos los modelos, incluye la lógica de las consultas (Jako)
+- New#8		: (CModelo) Simplificación de la base de los modelos, super de todos los modelos (Jako)
+- New#9		: (CBDComponente) Componente para el manejo de base de datos (Jako)
+- New#10	: (CTema) Representación del tema cargado (Jako)
+- New#11	: (CExBaseDeDatos) Excepción para arrojar cuando haya errores de base de datos (Jako)
+
+Version 1.0.0 Diciembre 29 de 2015
+----------------------------------
+Entrega inicial

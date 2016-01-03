@@ -4,7 +4,7 @@
  * 
  * @package sistema.web
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  */
 /**
@@ -22,6 +22,7 @@
  * @property string $nombreControlador Nombre del controlador invocado
  * @property string $nombreAccion Nombre de la acción invocada
  * @property string $nombreModulo Nombre del módulo invocado
+ * @property CBDComponente $bd Componente encargado de la conexión de base de datos
  */
 
 final class CAplicacionWeb {
@@ -53,6 +54,10 @@ final class CAplicacionWeb {
     private $mRegistro;
     private $mSesion;
     
+    /***************************************************************
+     *  Componentes                                                *
+     ***************************************************************/
+    private $bd;
    
     private function __construct($rutaConfiguraciones){
         $this->rutaConf = $rutaConfiguraciones;
@@ -103,9 +108,10 @@ final class CAplicacionWeb {
      * Esta función inica la aplicación
      */
     public function iniciar(){
+        $this->iniciarConfiguraciones();
         $this->prepararRuta();
         $this->controlador = $this->cargarControlador();
-        $this->controlador->antesDeIniciar();
+        $this->controlador->inicializar();
         $this->controlador->iniciar();
         
     }
@@ -172,6 +178,29 @@ final class CAplicacionWeb {
             throw new Exception("No hay configuraciones definidas para la aplicación");
         }
         $this->setearAtributos($this->configuraciones);
+    }
+    
+    /**
+     * Esta función inicia las configuraciones dadas en el archivo de configuración
+     */
+    private function iniciarConfiguraciones(){
+        $this->cargarTema();
+    }
+    
+    /*************************************
+     *  Configuraciones de la aplicación *
+     *************************************/
+    
+    private function cargarTema(){
+        if(!isset($this->configuraciones['tema'])){
+            return;
+        }
+        $nombreTema = $this->configuraciones['tema'];
+        $this->tema = new CTema($nombreTema);
+        $this->tema->iniciar();
+        if(!file_exists($this->tema->getRutaBase())){
+            throw new CExAplicacion("No existe el tema seleccionado '$nombreTema'");
+        }
     }
     
     /**
@@ -294,5 +323,26 @@ final class CAplicacionWeb {
      */
     public function getMRutas(){
         return $this->mRutas;
+    }
+    
+    /**
+     * Esta función retorna el componente de base de datos usado por la aplicación
+     * @return CBDComponente
+     * @throws CExAplicacion Si no se encuentra definida la configuración del componente de base de datos
+     */
+    public function getBd(){
+        if(!isset($this->configuraciones['componentes']['bd'])){
+            throw new CExAplicacion("No está definidala configuración para la base de datos");
+        }
+        
+        if($this->bd == null){
+            $this->bd = new CBDComponente($this->configuraciones['componentes']['bd']);
+        }
+        
+        return $this->bd;
+    }
+    
+    public function getTema(){
+        return $this->tema;
     }
 }

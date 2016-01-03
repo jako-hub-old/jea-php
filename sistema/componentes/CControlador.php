@@ -4,7 +4,7 @@
  * contiene los elementos necesarios para que un controlador cumpla con su función
  * @package sistema.componentes
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, 2015
  */
 abstract class CControlador extends CComponenteAplicacion{
@@ -32,12 +32,7 @@ abstract class CControlador extends CComponenteAplicacion{
      * Se puede usar para inicializar valores del controlador, o escribir lógica
      * para que se ejecute antes de llamar cualquier acción
      */
-    public function init(){}
-    
-    /**
-     * Aquí se puede poner lógica que queramos se ejecute antes de iniciar el controlador
-     */
-    public function antesDeIniciar() {}
+    public function inicializar(){}    
     
     /**
      * Esta función inicia el controlador
@@ -131,8 +126,14 @@ abstract class CControlador extends CComponenteAplicacion{
      * @throws CExAplicacion si ocurre algún error
      */
     private function validarVista($vista){
-        # funcionalidad de tema
-        $rutaVista = $this->rutaVistas;
+        // preguntamos si el tema fue definido, si es así tratamos de armar 
+        // la nueva ruta de las vistas desde la ubicación del tema
+        if(Sistema::apl()->tema !== null &&
+            file_exists(Sistema::apl()->tema->getRutaBase().DS."vistas".DS."$vista.php")){
+            $rutaVista = Sistema::apl()->tema->getRutaBase().DS."vistas";
+        }else{
+            $rutaVista = $this->rutaVistas;
+        }
         
         if(!file_exists($rutaVista) && !is_dir($rutaVista)){
             throw new CExAplicacion("No existe la ruta controlador");
