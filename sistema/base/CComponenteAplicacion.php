@@ -4,7 +4,7 @@
  * no es instancia de esta clase no será aceptado como componente
  * @package sistema.base
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright (c) 2015, jakop
  */
 
@@ -15,6 +15,15 @@ abstract class CComponenteAplicacion {
      * @var string 
      */
     protected $ID;
+    /**
+     * Esta variable se puede usar para asignarle un identificador especial
+     * para las variables que serán seteadas en el componente, si está vacio
+     * quiere decir que todas las variables del componente podrán ser seteadas
+     * al llamar la función asignarAtributos
+     * 
+     * @var string 
+     */
+    protected $c = '';
     
     /**
      * Esta es la función magica para get, solo retornará atributos existentes
@@ -37,7 +46,7 @@ abstract class CComponenteAplicacion {
      */
     public function __set($nombre, $valor){
         if(!isset($this->$nombre)){
-            throw new Exception("La propiedad a la que trata de acceder no está definida");
+            throw new Exception("La propiedad a la que trata de acceder ('$nombre') no está definida");
         }
         $this->$nombre = $valor;
     }
@@ -49,7 +58,7 @@ abstract class CComponenteAplicacion {
      */
     public function asignarAtributos(array $atributos = []){
         foreach ($atributos AS $nombre=>$valor){
-            $this->$nombre = $valor;
+            $this->{$this->c.$nombre} = $valor;
         }
     }
     

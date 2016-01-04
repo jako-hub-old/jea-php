@@ -3,7 +3,7 @@
  * Esta clase maneja todo lo que tenga que ver con recursos de la aplicación
  * @package sistema.manejadores
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  */
 class CMRecursos {
@@ -52,8 +52,8 @@ class CMRecursos {
     private $fuenteRecursos;
     
     public function __construct() {
-        $this->rutaRecursos = Sistema::resolverRuta('!publico.recursos');
-        $this->urlRecursos = Sistema::apl()->urlBase.'publico/recursos/';
+        $this->rutaRecursos = Sistema::resolverRuta('!raiz.recursos');
+        $this->urlRecursos = Sistema::apl()->urlBase.'recursos/';
         $this->fuenteRecursos = Sistema::resolverRuta('!sistema.recursos');
         $this->inicializar();
     }
@@ -81,18 +81,26 @@ class CMRecursos {
      * @return boolean
      */
     private function registrarRecurso($recurso = [], $tipo = self::RE_JS){
-        if(!isset($recurso['ruta']) || !file_exists($recurso['ruta'])){
+        if(!isset($recurso['url']) && (!isset($recurso['ruta']) || !file_exists($recurso['ruta']))){
             return false;
         }
-        $archivo = basename($recurso['ruta']);
-        if(!file_exists($this->rutaRecursos.DS.$tipo.DS.$archivo)){            
+        $archivo = isset($recurso['ruta'])? basename($recurso['ruta']) : '';
+        # si se seteó la posición url quiere decir que no se quiere mover el archivo
+        if(!isset($recurso['url']) && !file_exists($this->rutaRecursos.DS.$tipo.DS.$archivo)){            
             $this->moverRecurso($recurso['ruta'], $archivo, $tipo);
+        } else if(isset ($recurso['url'])){
+            $urlRecurso = $recurso['url'];
+        } 
+        
+        if(!isset($urlRecurso)) {
+            $urlRecurso = $this->urlRecursos."$tipo/$archivo";
         }
+        
         $this->recursosRegistrados[$tipo][] = array(
                 'alias' => $recurso['alias'],
-                'url' => $this->urlRecursos."$tipo/$archivo",
+                'url' => $urlRecurso,
                 'pos' => isset($recurso['pos'])? $recurso['pos'] : self::POS_HEAD,
-                'tipo' => $tipo, // vuelvo y guardo el tipo por que más adelante me es util
+                'tipo' => $tipo, # vuelvo y guardo el tipo por que más adelante me es util
             );
         $this->aliasRegistrados[$tipo][] = $recurso['alias'];
         return true;
@@ -174,12 +182,12 @@ class CMRecursos {
             else if($pos === self::POS_READY + 3){ $scriptsready .= implode('', $recurso);}
             else if($pos === self::POS_HEAD + 5) { $estiloshead .= implode('', $recurso);}
         }
-        $scriptsbody = $scriptsbody != ""? '<script type="text/javascript">'.$scriptsbody.'</script>' : '';
-        $scriptshead = $scriptshead != ""? '<script type="text/javascript">'.$scriptshead.'</script>' : '';
-        $scriptsready = $scriptsready != ""? '<script type="text/javascript">jQuery(function(){'.$scriptsready.'});</script>' : '';
-        $estiloshead = $estiloshead != ""? '<style>'.$estiloshead.'</style>' : '';
-        $html = str_replace('</body>', $body.$scriptsbody.$scriptsready.'</body>', 
-                str_replace('</head>', $head.$estiloshead.$scriptshead.'</head>', $html)
+        $sbody = $scriptsbody != ""? '<script type="text/javascript">'.$scriptsbody.'</script>' : '';
+        $shead = $scriptshead != ""? '<script type="text/javascript">'.$scriptshead.'</script>' : '';
+        $sready = $scriptsready != ""? '<script type="text/javascript">jQuery(function(){'.$scriptsready.'});</script>' : '';
+        $ehead = $estiloshead != ""? '<style>'.$estiloshead.'</style>' : '';
+        $html = str_replace('</body>', $body.$sbody.$sready.'</body>', 
+                str_replace('</head>', $head.$ehead.$shead.'</head>', $html)
             );
     }
     
@@ -232,7 +240,7 @@ class CMRecursos {
             'ruta' => Sistema::resolverRuta('!sistema.recursos.frameworks.awesome_fonts.css').'/font_awesome.css',
         ]);
         $rutaFuente = Sistema::resolverRuta('!sistema.recursos.frameworks.awesome_fonts.fonts');
-        $rutaDestino = Sistema::resolverRuta('!publico.recursos.fonts');
+        $rutaDestino = Sistema::resolverRuta('!raiz.recursos.fonts');
         $this->moverDependencias($rutaFuente, $rutaDestino);
     }
     
@@ -250,7 +258,7 @@ class CMRecursos {
             'ruta' => Sistema::resolverRuta('!sistema.recursos.frameworks.bootstrap3.css').'/bootstrap.css',
         ]);
         $rutaFuente = Sistema::resolverRuta('!sistema.recursos.frameworks.bootstrap3.fonts');
-        $rutaDestino = Sistema::resolverRuta('!publico.recursos.fonts');
+        $rutaDestino = Sistema::resolverRuta('!raiz.recursos.fonts');
         $this->moverDependencias($rutaFuente, $rutaDestino);
     }
     

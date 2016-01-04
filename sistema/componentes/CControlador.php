@@ -14,11 +14,36 @@ abstract class CControlador extends CComponenteAplicacion{
      * @var CAccion 
      */
     protected $accion;
+    /**
+     * contenido generado al mostrar una vista
+     * @var string 
+     */
     protected $contenido;
+    /**
+     * Nombre de la plantilla a usar para mostrar vistas
+     * @var string 
+     */
     protected $plantilla = 'basica';
+    /**
+     * Titulo de la pagína actual
+     * @var string 
+     */
     protected $tituloPagina;
+    /**
+     * Ruta de las vistas de este controlador
+     * @var string 
+     */
     protected $rutaVistas;
+    /**
+     * Nombre de la acción que fue invocada
+     * @var string 
+     */
     private $nombreAccion;
+    /**
+     * Indica si el controlador pertenece a un módulo
+     * @var boolean 
+     */
+    private $perteneceAModulo = false;
 
 
     public function __construct($ID =__CLASS__, $accion) {
@@ -45,8 +70,8 @@ abstract class CControlador extends CComponenteAplicacion{
         
         unset($parametros['r']);
         
-        // validamos si hay parámetros para agregar a la función
-        // NOTA: solo se agregará un parámetro a la función
+        # validamos si hay parámetros para agregar a la función
+        # NOTA: solo se agregará un parámetro a la función
         if(count($parametros) > 0){
             $parametros = array_values($parametros);
             call_user_func(array($this, $this->accion->getFn()), $parametros[0]);
@@ -78,8 +103,8 @@ abstract class CControlador extends CComponenteAplicacion{
      */
     public function mostrarVista($vista = '', $parametros = []){
         $rutaVista = $this->validarVista(lcfirst($this->ID).DS.$vista);
-        $this->contenido = $this->obtenerHtmlDeArchivo($rutaVista, $parametros);        
-        $rutaPlantilla = $this->validarVista('plantillas'.DS.$this->plantilla);
+        $this->contenido = $this->obtenerHtmlDeArchivo($rutaVista, $parametros);
+        $rutaPlantilla = $this->validarVista('plantillas'.DS.$this->plantilla, true);
         $this->contenido = $this->obtenerHtmlDeArchivo($rutaPlantilla);
         Sistema::apl()->mRecursos->incluirRecursos($this->contenido);
         echo $this->contenido;
@@ -122,23 +147,32 @@ abstract class CControlador extends CComponenteAplicacion{
     /**
      * Esta función se encarga de buscar y validar la existencia de la vista invocada
      * @param string $vista
+     * @param boolean $plantilla Si es una plantilla o una vista lo que se quiere cargar
      * @return string
      * @throws CExAplicacion si ocurre algún error
      */
-    private function validarVista($vista){
-        // preguntamos si el tema fue definido, si es así tratamos de armar 
-        // la nueva ruta de las vistas desde la ubicación del tema
-        if(Sistema::apl()->tema !== null &&
-            file_exists(Sistema::apl()->tema->getRutaBase().DS."vistas".DS."$vista.php")){
+    private function validarVista($vista, $plantilla = false){
+        
+        #posible ruta de la vista en el tema, si el tema existe
+        $rutaVistaTema = Sistema::apl()->tema !== null? 
+                (Sistema::apl()->tema->getRutaBase().DS."vistas".DS."$vista.php") : "";
+        $buscarEnTemas = Sistema::apl()->tema !== null && file_exists($rutaVistaTema);
+        
+        # Si se trata de un módulo siempre va a tener preferencia la plantilla
+        # del tema seleccionado        
+        if((!$this->perteneceAModulo && $buscarEnTemas) || 
+                ($this->perteneceAModulo && $plantilla && $buscarEnTemas)){
             $rutaVista = Sistema::apl()->tema->getRutaBase().DS."vistas";
-        }else{
+        } else {
             $rutaVista = $this->rutaVistas;
         }
         
         if(!file_exists($rutaVista) && !is_dir($rutaVista)){
             throw new CExAplicacion("No existe la ruta controlador");
         }else if(!file_exists($rutaVista.DS.$vista.'.php')){
-            throw new CExAplicacion("No existe el archivo '$vista'.php dentro del directorio de vistas");
+            throw new CExAplicacion("No existe el archivo '$vista.php' dentro del directorio de "
+                    . ($plantilla? "plantillas" : "vistas")
+                    . ($this->perteneceAModulo? "<br><b>Modulo: Si</b>" : ""));
         }
         
         return $rutaVista.DS.$vista.'.php';
@@ -159,5 +193,21 @@ abstract class CControlador extends CComponenteAplicacion{
         foreach ($parametros AS $nombre=>$valor){ $$nombre = $valor; }
         include $archivo;
         return ob_get_clean();
+    }
+    
+    /**
+     * Esta función retorna el nombre de la acción cargada
+     * @return string
+     */
+    public function getAccion(){
+        return $this->accion->ID;
+    }
+    
+    /**
+     * Esta función permite indicar al controlador si pertenece o no a un módulo
+     * @param boolean $b
+     */
+    public function perteneceAModulo($b){
+        $this->perteneceAModulo = $b;
     }
 }

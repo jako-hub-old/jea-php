@@ -4,10 +4,11 @@
  * 
  * @package sistema.web
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright (c) 2015, jakop
  */
 /**
+ * @property string $nombre Nombre de la aplicación
  * @property CMRecursos $mRecursos Clase manejadora de recursos
  * @property string $rutaBase Ruta base de la aplicación
  * @property string $urlBase Url base de la aplicación
@@ -110,10 +111,38 @@ final class CAplicacionWeb {
     public function iniciar(){
         $this->iniciarConfiguraciones();
         $this->prepararRuta();
+        
+        if($this->nombreModulo !== null){
+            #flujo con módulo
+            $this->flujoConModulo($this->nombreModulo);
+        } else {
+            #flujo sin módulo
+            $this->flujoNormal();
+        }
+    }
+    
+    /**
+     * Esta función se ejecuta cuando hay un flujo normal en la aplicación
+     * es decir, se hace una llamada a un controlador
+     */
+    private function flujoNormal(){
         $this->controlador = $this->cargarControlador();
         $this->controlador->inicializar();
         $this->controlador->iniciar();
-        
+    }
+    
+    /**
+     * Esta función se ejecuta cuando hay un flujo con módulo, es decir
+     * se invocó un modulo en la url, se detecta la ejecución de un módulo
+     * si el nombre del controlador se encuentra registrado en el array
+     * de módulos
+     * @param string $nombreModulo nombre del módulo invocado
+     */
+    private function flujoConModulo($nombreModulo){
+        $this->modulo = CModulo::cargarModulo($nombreModulo);
+        $this->modulo->setControlador($this->nombreControlador, $this->nombreAccion);
+        $this->modulo->antesDeIniciar();
+        $this->modulo->iniciar();
     }
     
     /**
@@ -155,12 +184,26 @@ final class CAplicacionWeb {
      */
     private function prepararRuta(){
         $get = filter_input_array(INPUT_GET);
-        if(isset($get['r'])){
-            $partes = explode('/', $get['r']);
+        $partes = explode('/', $get['r']);        
+        # la petición es hacia un módulo se si cumplen estas condiciones
+        # los módulos tienen prioridad sobre los controladores
+        $esModulo = (count($partes) == 3) ||
+                (count($partes) >= 1 && isset($this->configuraciones['modulos']) && 
+                isset($this->configuraciones['modulos'][$partes[0]]));
+        
+        if($esModulo){
+            $this->nombreModulo = $partes[0];
+            unset($partes[0]);
+            $partes = array_values($partes);
+            # la acción y la vista pueden estar nulas, el módulo ya valida esto
+            $this->nombreControlador = isset($partes[0]) && !empty($partes[0])? $partes[0] : null;
+            $this->nombreAccion = isset($partes[1]) && !empty($partes[0])? $partes[1] : null;
+        }else{
+            # flujo normal
             $this->nombreControlador = isset($partes[0]) && !empty($partes[0])? $partes[0] : $this->nombreControlador;
-            $this->nombreAccion = isset($partes[1]) && !empty($partes[0])? $partes[1] : $this->nombreAccion;
-            $this->nombreModulo = isset($partes[1]) && !empty($partes[0])? $partes[1] : $this->nombreModulo;
+            $this->nombreAccion = isset($partes[1]) && !empty($partes[0])? $partes[1] : $this->nombreAccion;            
         }
+        
     }
     
     /**
@@ -265,6 +308,13 @@ final class CAplicacionWeb {
      *  privados a los que solo se les permite lectura a través    *
      *  de un método get                                           *
      ***************************************************************/
+    /**
+     * Esta función retorna el nombre de la aplicación
+     * @return String
+     */
+    public function getNombre(){
+        return $this->nombre;
+    }
     
     /**
      * Esta función retorna el charset que maneja la aplicación
@@ -341,8 +391,24 @@ final class CAplicacionWeb {
         
         return $this->bd;
     }
-    
+    /**
+     * Esta función devuelve la instancia del tema cargado en la aplicación
+     * @return CTema
+     */
     public function getTema(){
         return $this->tema;
+    }
+    
+    /**
+     * Esta función retorna un parametro de la configuración;
+     * En caso de que el parametro de la configuración sea array, solo se podrpa
+     * aceder al primer nivel
+     * 
+     * @param string $nombre
+     * @return mixed
+     */
+    public function getConfiguracion($nombre){
+        return isset($this->configuraciones[$nombre])? 
+            $this->configuraciones[$nombre] : false;
     }
 }

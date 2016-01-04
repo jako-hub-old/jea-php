@@ -5,7 +5,7 @@
  * 
  * @package sistema
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  */
 final class Sistema {
@@ -28,7 +28,7 @@ final class Sistema {
      * Versión actual del sistema
      * @var string 
      */
-    private static $version = '1.0.0';
+    private static $version = '1.0.1';
     
     private function __construct() {}
     
@@ -156,7 +156,12 @@ final class Sistema {
         if($usandoAlias){
             $ruta = self::resolverRuta($ruta, true);
         }
-        return (@include_once $ruta) === 1;
+
+        if(!file_exists($ruta)){
+            return false;
+        }
+        
+        return (include_once $ruta) === 1;
     }
     
     /**
