@@ -39,12 +39,13 @@ abstract class CControlador extends CComponenteAplicacion{
      * @var string 
      */
     private $nombreAccion;
+    protected $accionPorDefecto = null;
     /**
      * Indica si el controlador pertenece a un módulo
      * @var boolean 
      */
     private $perteneceAModulo = false;
-
+    
 
     public function __construct($ID =__CLASS__, $accion) {
         $this->ID = $ID;
@@ -65,8 +66,13 @@ abstract class CControlador extends CComponenteAplicacion{
     public function iniciar() {
         $parametros = filter_input_array(INPUT_GET);
         $accion = $this->cargarAccion($this->nombreAccion);
-        
-        if(!$accion){ throw new CExAplicacion("La acción solicitada no está creada ($this->nombreAccion)"); }
+        $porDefecto = $this->accionPorDefecto !== null && 
+                method_exists($this, 'accion'.  ucfirst($this->accionPorDefecto));
+        if(!$accion && !$porDefecto){
+            throw new CExAplicacion("La acción solicitada no está creada ($this->nombreAccion)");             
+        }else if($porDefecto){
+            $this->cargarAccion($this->accionPorDefecto);
+        }
         
         unset($parametros['r']);
         
@@ -193,6 +199,18 @@ abstract class CControlador extends CComponenteAplicacion{
         foreach ($parametros AS $nombre=>$valor){ $$nombre = $valor; }
         include $archivo;
         return ob_get_clean();
+    }
+    
+    /**
+     * Esta función permite cargar y ejecutar un complemento
+     * @param string $ruta
+     * @param array $opciones
+     */
+    public function complemento($ruta, $opciones){
+        $com = CComplemento::cargarComplemento($ruta);
+        $com->asignarAtributos($opciones);
+        $com->inicializar();
+        $com->iniciar();
     }
     
     /**

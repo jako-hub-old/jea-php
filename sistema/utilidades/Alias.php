@@ -6,7 +6,7 @@
  * 
  * @package sistema.utilidades
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  */
 
@@ -16,4 +16,5 @@ return array(
     '!sistema' => $rutaBase,
     '!web' => $rutaBase.DS.'web',
     '!base' => $rutaBase.DS.'base',
+    '!siscoms' => $rutaBase.DS.'web'.DS.'coms',
 );

@@ -1,3 +1,19 @@
+- Mod#1		: (CComponenteAplicacion) Se agrega un identificador para diferenciar que atributos son seteables por un array
+- Mod#2		: (CControlador) Se incorporan mejoras para adaptar el controlador al manejo de módulos y se agregan comentarios
+- Mod#3		: (CMRecursos) [registrarRecurso()] se mejora el método para permitir elegir si se desea copiar el archivo a los recursos
+- Mod#4		: (CAplicaionWeb) Se incorpora la funcionalidad para controlar el flujo con módulo
+- Mod#5		: (CControladorBaseDeDatos) Se añaden los prefijos para las tablas en la base de datos
+- Mod#6		: (CBDComponente) Se añaden los prefijos para las tablas en la base de datos
+- Mod#7		: (CControlador) Se incorpora la carga de complementos
+- Mod#8		: (Alias.php) Se agrega un nuevo alias !siscoms
+- Mod#9		: (CAplicacionWeb) Se modifica el formato del array de alias
+- Bug#1		: (CMRutas) [crearUrl()] Se arregla un bug al crear urls en la aplicación
+- New#1		: (CModulo) Se incorpora la clase base para todos los módulos
+- New#2		: (CComplemento) Se incorpora la posibilidad de crear componentes
+- New#3		: (CHtml) Se incorpora un asistente para la generación de html 
+- New#4		: (CBoot) Se incorpora un asistente para la generacdión de html con bootstrap3 
+
+------------------------------
 Version 1.0.1 Enero 03 de 2016
 ------------------------------
 - Mod#1		: (CAplicacionWeb) Se agrega el componente de base de datos y la carga configuraciones (Jako)
@@ -16,6 +32,7 @@ Version 1.0.1 Enero 03 de 2016
 - New#10	: (CTema) Representación del tema cargado (Jako)
 - New#11	: (CExBaseDeDatos) Excepción para arrojar cuando haya errores de base de datos (Jako)
 
+----------------------------------
 Version 1.0.0 Diciembre 29 de 2015
 ----------------------------------
 Entrega inicial

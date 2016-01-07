@@ -3,7 +3,7 @@
  * Esta clase es la encargada de manipular y generar las rutas de la aplicación
  * @package manejadores
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  */
 
@@ -114,7 +114,8 @@ class CMRutas {
      * @param array $ruta
      * @return string
      */
-    public function crearUrl($ruta = array()){        
+    public function crearUrl($ruta = array()){
+        if(gettype($ruta) == 'string'){ return $ruta; }
         if(count($ruta) == 0){
             return $this->getUrlBase();
         }

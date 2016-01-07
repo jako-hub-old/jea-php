@@ -68,13 +68,13 @@ final class CAplicacionWeb {
         $this->mRutas = new CMRutas();
         $this->urlBase = $this->mRutas->getUrlBase();
         $this->rutaBase = $this->mRutas->getRutaBase();
-        Sistema::setAlias(array(
+        Sistema::setAlias([
             '!aplicacion' => $this->rutaBase . DS . 'protegido',
             '!modulos' => $this->rutaBase . DS . 'protegido' . DS . 'modulos',
             '!componentes' => $this->rutaBase. DS .'protegido' . DS . 'componentes',
             '!raiz' => $this->rutaBase,
             '!publico' => $this->rutaBase. DS . 'publico',
-        ));
+        ]);
     }
     
     /**

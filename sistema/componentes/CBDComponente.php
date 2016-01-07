@@ -42,7 +42,11 @@ class CBDComponente extends CComponenteAplicacion{
      */
     private function cargarMysql($config){
         CConectorMySql::iniciar($config);
-        $this->controlador = new CMySqlDriver(); 
+        $this->controlador = new CMySqlDriver();
+        # Si se definió un prefijo lo seteamos de inmediato en el controlador
+        if(isset($config['prefijo'])){
+            $this->controlador->prefijo = $config['prefijo'];
+        }
     }
     
     /*********************

@@ -4,7 +4,7 @@
  * controladores de bases de datos
  * @package sistema.base
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  *
  * @property string $consulta
@@ -19,6 +19,7 @@
  * @property string $alias
  * @property string $columnas
  * @property string $valores
+ * @property string $prefijo
  */
 abstract class CControladorBaseDeDatos 
     implements ICriterios{
@@ -28,6 +29,7 @@ abstract class CControladorBaseDeDatos
     protected $_valores;
     protected $_consulta;
     protected $_alias = 't';
+    protected $_prefijo = '';
     
     /************************************************
      *               comandos de sql                *
@@ -62,7 +64,7 @@ abstract class CControladorBaseDeDatos
      * @param string $tabla
      */
     public function tabla($tabla){
-        $this->_tabla = $tabla;
+        $this->_tabla = $this->_prefijo.$tabla;
     }
     
     /************************************************
@@ -88,6 +90,7 @@ abstract class CControladorBaseDeDatos
     public function offset($p = ''){ $this->_offset = $p; }
     public function columnas($p = ''){ $this->_columnas = $p; }
     public function valores($p = ''){ $this->_valores = $p; }
+    public function prefijo($p = ''){ $this->_prefijo = $p; }
     
     /************************************************
      *     Funciones para obtención de variables    *

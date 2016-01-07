@@ -231,7 +231,7 @@ abstract class CBaseModelo {
                 return Sistema::apl()->bd->controlador->eliminar();
             default : 
                 throw new CExAplicacion("Operación no soportada");
-        }        
+        }
     }
     
     /************************************************
