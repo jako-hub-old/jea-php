@@ -15,4 +15,5 @@ return array(
     '.htaccess',
     'nbproject',
     'CAplicacionWeb.php',
+    'coms',
 );

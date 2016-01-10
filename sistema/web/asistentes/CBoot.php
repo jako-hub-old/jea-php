@@ -3,7 +3,7 @@
  * Esta clase es el asistente para generar html con clases de bootstrap
  * @package sistema.web.asistentes
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2014, jakop
  */
 final class CBoot {
@@ -31,6 +31,10 @@ final class CBoot {
     public static function boton($nombre = '', $tipo = 'default', $opciones = []) {
         $clase = "btn btn-$tipo";
         $opciones['class'] = isset($opciones['class'])? "$clase " . $opciones['class'] : $clase;
+        if(isset($opciones['group']) && $opciones['group'] == true){
+            unset($opciones['group']);
+            return CHtml::e('div',CHtml::boton($nombre, $opciones), ['class' => 'form-group']);
+        }
         return CHtml::boton($nombre, $opciones);
     }
     
@@ -97,7 +101,23 @@ final class CBoot {
         # no queremos que se ponga el tipo en las opciones
         unset($opciones['type']);
         $opciones['class'] = isset($opciones['class'])? "form-control ".$opciones['class'] : 'form-control';
-        return CHtml::input($tipo, $valor, $opciones);
+        
+        if(isset($opciones['group'])){
+            $label = isset($opciones['label'])? 
+                CHtml::e("label", $opciones['label']) : "";
+            unset($opciones['group']);
+            unset($opciones['label']);
+            return CHtml::e('div', $label.CHtml::input($tipo, $valor, $opciones), ['class' => 'form-group']);
+        } else{            
+            return CHtml::input($tipo, $valor, $opciones);
+        }
+    }
+    
+    public static function submit($nombre, $tipo = 'default', $opciones = []){
+        unset($opciones['tipo']);
+        $valor = str_replace(' ', '_', $nombre);
+        $opciones['class'] = "btn btn-$tipo ".(isset($opciones['class'])? $opciones['class'] : "");
+        return CHtml::input('submit', $valor, $opciones);
     }
     
     /**
@@ -143,11 +163,17 @@ final class CBoot {
             unset($opciones['pos-btn']);
         }
         
-        $input = self::input('text', $valor, $opciones);
+        $group = (isset($opciones['group']) && $opciones['group'] == true);
+        unset($opciones['group']);
         
-        return  ($pre !== '' || $pos !== '')?
+        $input = self::input('text', $valor, $opciones);
+        $html = ($pre !== '' || $pos !== '')?
             CHtml::e('div', $pre.$input.$pos, ['class' => 'input-group']) : 
-            $input;        
+            $input;
+        
+        return $group? 
+            CHtml::e('div', $html, ['class' => 'form-group']) :
+            $html;                
     }
     
     /**
@@ -158,6 +184,10 @@ final class CBoot {
      */
     public static function textArea($valor = '', $opciones = []){
         $opciones['class'] = isset($opciones['class'])? "form-control ".$opciones['class'] : 'form-control';
+        if(isset($opciones['group']) && $opciones['group'] == true){
+            unset($opciones['group']);
+            return CHtml::e('div', CHtml::areaTexto($valor, $opciones),['class' => 'form-group']);
+        }
         return CHtml::areaTexto($valor, $opciones);
     }
     
@@ -428,5 +458,19 @@ final class CBoot {
      */
     public static function buttonList($elementos = [], $opciones = []){
         return self::listGroupBase($elementos, $opciones, 'div', 'button');
+    }
+    
+    /**
+     * Esta función permite crear la iconografía de font awesome
+     * @param string $icono
+     * @param array $opciones
+     * @return string
+     */
+    public static function fa($icono, $opciones = []){
+        $opciones['class'] = isset($opciones['class'])? 
+                "fa fa-$icono " . $opciones['class'] : 
+                "fa fa-$icono";
+        return CHtml::e('i', '', $opciones);
+        
     }
 }

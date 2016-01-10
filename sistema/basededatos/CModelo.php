@@ -7,6 +7,19 @@
  * @copyright (c) 2015, jakop
  */
 abstract class CModelo extends CBaseModelo{
+    
+    /**
+     * Esta función debe ser implementada para devolver el nombre de la tabla
+     * que representa el modelo
+     * @return string Retorna el nombre de la tabla que representa el modelo
+     */
+    public abstract function tabla();
+    
+    /**
+     * Esta función debe ser implementada para devolver el un array con las 
+     * columnas de la tabla representada
+     */
+    public abstract function atributos();
         
     /**
      * Esta función puede ser sobrecargada para retornar las etiquetas

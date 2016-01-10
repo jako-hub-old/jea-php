@@ -25,7 +25,7 @@ final class Sistema {
      */
     private static $rutaSistema;
     /**
-     * Versión actual del sistema
+     * Versión actual del framework
      * @var string 
      */
     private static $version = '1.0.1';
@@ -129,10 +129,22 @@ final class Sistema {
      */
     public static function resolverRuta($ruta, $conClase = false){
         $partes = explode('.',$ruta);
-        $nombreClase = $partes[count($partes) - 1];
-        $rutaReal = isset(self::$alias[$partes[0]])? self::$alias[$partes[0]] : $partes[0];
-        for($i = 1; $i < count($partes) - 1; $i ++){ $rutaReal .= DS.$partes[$i]; }
-        return $rutaReal.DS.$nombreClase.($conClase? '.php' : '');
+        # si el resultado de explotar la ruta es mayor que uno el nombre de la 
+        # clase se supone debe ser la última posición, el resto es ruta
+        if(count($partes) > 1){ $nombreClase = $partes[count($partes) - 1]; } 
+        else { $nombreClase = ''; }
+        
+        if(isset(self::$alias[$partes[0]])){
+            $rutaReal = self::$alias[$partes[0]];
+            unset($partes[0]);
+        } else {
+            $rutaReal = $partes[0];
+        }
+        
+        # construimos la ruta
+        for($i = 1; $i < count($partes); $i ++){ $rutaReal .= DS.$partes[$i]; }
+        
+        return $rutaReal.($nombreClase !== ''? DS.$nombreClase : '').($conClase? '.php' : '');
     }
     
     /**

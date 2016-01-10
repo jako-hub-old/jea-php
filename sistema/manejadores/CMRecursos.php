@@ -3,7 +3,7 @@
  * Esta clase maneja todo lo que tenga que ver con recursos de la aplicación
  * @package sistema.manejadores
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright (c) 2015, jakop
  */
 class CMRecursos {
@@ -39,6 +39,11 @@ class CMRecursos {
      * @var array 
      */
     private $recursosRegistrados = [];
+    /**
+     * Lista de recursos que deben ser incorporados antes que los demás
+     * @var array 
+     */
+    private $recursosPrimarios = [];
     /**
      * Esta variable se usa para almacenar los alias que se registran,
      * de esta manera no solo se controla que alias ya existen, sin
@@ -80,7 +85,7 @@ class CMRecursos {
      * @param string $tipo
      * @return boolean
      */
-    private function registrarRecurso($recurso = [], $tipo = self::RE_JS){
+    private function registrarRecurso($recurso = [], $tipo = self::RE_JS, $primario = false){
         if(!isset($recurso['url']) && (!isset($recurso['ruta']) || !file_exists($recurso['ruta']))){
             return false;
         }
@@ -95,14 +100,22 @@ class CMRecursos {
         if(!isset($urlRecurso)) {
             $urlRecurso = $this->urlRecursos."$tipo/$archivo";
         }
-        
-        $this->recursosRegistrados[$tipo][] = array(
+        if($primario){
+            $this->recursosPrimarios[$tipo][] = array(
                 'alias' => $recurso['alias'],
                 'url' => $urlRecurso,
                 'pos' => isset($recurso['pos'])? $recurso['pos'] : self::POS_HEAD,
                 'tipo' => $tipo, # vuelvo y guardo el tipo por que más adelante me es util
             );
-        $this->aliasRegistrados[$tipo][] = $recurso['alias'];
+        } else {            
+            $this->recursosRegistrados[$tipo][] = array(
+                    'alias' => $recurso['alias'],
+                    'url' => $urlRecurso,
+                    'pos' => isset($recurso['pos'])? $recurso['pos'] : self::POS_HEAD,
+                    'tipo' => $tipo, # vuelvo y guardo el tipo por que más adelante me es util
+                );
+            $this->aliasRegistrados[$tipo][] = $recurso['alias'];
+        }
         return true;
     }
     
@@ -127,8 +140,13 @@ class CMRecursos {
      * @param array $recurso
      * @return boolean
      */
-    public function registrarRecursoJS($recurso = []){
-        return $this->registrarRecurso($recurso);
+    public function registrarRecursoJS($recurso = [], $primario = false){
+        # verificamos si el recurso ya fue registrado con ese alias, si es así no realizamos el registro del recurso        
+        if(isset($this->aliasRegistrados[self::RE_JS]) && 
+            $this->getJs($recurso['alias']) !== false){
+            return false;
+        }
+        return $this->registrarRecurso($recurso, self::RE_JS, $primario);
     }
     
     /**
@@ -136,9 +154,14 @@ class CMRecursos {
      * @param string $recurso
      * @return boolean
      */
-    public function registrarRecursoCSS($recurso = []){
+    public function registrarRecursoCSS($recurso = [], $primario = false){
+        # verificamos si el recurso ya fue registrado con ese alias, si es así no lo incluimos
+        if(isset($this->aliasRegistrados[self::RE_CSS]) && 
+            $this->getCss($recurso['alias']) !== false){
+            return false;
+        }
         $recurso['pos'] = self::POS_HEAD;
-        return $this->registrarRecurso($recurso, self::RE_CSS);
+        return $this->registrarRecurso($recurso, self::RE_CSS, $primario);
     }
     
     /**
@@ -169,7 +192,7 @@ class CMRecursos {
      * @param string $html
      */
     public function incluirRecursos(&$html){
-        $recursos = $this->construirHtmlRecursos();        
+        $recursos = $this->construirHtmlRecursos();    
         $head = '';
         $body = '';
         $scriptsbody = ''; $scriptshead = ''; $scriptsready = ''; $estiloshead = '';
@@ -196,26 +219,29 @@ class CMRecursos {
      * @return array
      */
     private function construirHtmlRecursos(){
-        // combinamos todos los recursos para recorrerlos más fácil
+        #si hay recursos primarios los incluimos 
+        if(isset($this->recursosPrimarios['css'])){            
+            $this->recursosRegistrados['css'] = array_merge($this->recursosPrimarios['css'], $this->recursosRegistrados['css']);
+        }
+        if(isset($this->recursosPrimarios['js'])){
+            $this->recursosRegistrados['js'] = array_merge($this->recursosPrimarios['js'], $this->recursosRegistrados['js']);
+        }
+        # combinamos todos los recursos para recorrerlos más fácil
         $recursos = array_merge($this->recursosRegistrados['css'], $this->recursosRegistrados['js']);
-        $html = array();
-        
+        $html = [];
+        # recorremos todos los recursos y construimos su respectivo html
         foreach($recursos AS $recurso){
-            if($recurso['tipo'] == self::RE_JS){
+            if($recurso['tipo'] == self::RE_JS){ 
                 $etiqueta = '<script type="text/javascript" src="' . $recurso['url'] . '"></script>';
             }else{
                 $etiqueta = '<link rel="stylesheet" type="text/css" href="' . $recurso['url'] . '">';
             }            
             $html[$recurso['pos']][] = $etiqueta;
         }
-        
-        foreach ($this->scriptsEnCliente AS $script){
-            $html[intval($script['pos']) + 3][] = $script['script'];
-        }
-        
-        foreach ($this->estilosEnCliente AS $estilo){
-            $html[self::POS_HEAD + 5][] = $estilo['estilos'];
-        }
+        # agregamos los scripts cliente registrados
+        foreach ($this->scriptsEnCliente AS $script){ $html[intval($script['pos']) + 3][] = $script['script']; }
+        # agregamos los estilos cliente registrados
+        foreach ($this->estilosEnCliente AS $estilo){ $html[self::POS_HEAD + 5][] = $estilo['estilos']; }        
         return $html;
     }
     
@@ -228,7 +254,7 @@ class CMRecursos {
             'alias' => 'sis-jquery',
             'ruta' => Sistema::resolverRuta('!sistema.recursos.frameworks.jquery').'/jquery.js',
             'pos' => CMRecursos::POS_HEAD,            
-        ]);
+        ], true);
     }
     
     /**
@@ -238,7 +264,7 @@ class CMRecursos {
         $this->registrarRecursoCSS([
             'alias' => 'sis-awesome-font',
             'ruta' => Sistema::resolverRuta('!sistema.recursos.frameworks.awesome_fonts.css').'/font_awesome.css',
-        ]);
+        ], true);
         $rutaFuente = Sistema::resolverRuta('!sistema.recursos.frameworks.awesome_fonts.fonts');
         $rutaDestino = Sistema::resolverRuta('!raiz.recursos.fonts');
         $this->moverDependencias($rutaFuente, $rutaDestino);
@@ -252,11 +278,11 @@ class CMRecursos {
             'alias' => 'sis-bootstrap-3',
             'ruta' => Sistema::resolverRuta('!sistema.recursos.frameworks.bootstrap3.js').'/bootstrap.js',
             'pos' => CMRecursos::POS_HEAD,
-        ]);
+        ], true);
         $this->registrarRecursoCSS([
             'alias' => 'sis-bootstrap-3',
             'ruta' => Sistema::resolverRuta('!sistema.recursos.frameworks.bootstrap3.css').'/bootstrap.css',
-        ]);
+        ], true);
         $rutaFuente = Sistema::resolverRuta('!sistema.recursos.frameworks.bootstrap3.fonts');
         $rutaDestino = Sistema::resolverRuta('!raiz.recursos.fonts');
         $this->moverDependencias($rutaFuente, $rutaDestino);
@@ -316,5 +342,28 @@ class CMRecursos {
      */
     public function getRecursos(){
         return $this->recursosRegistrados;
+    }
+    
+    /**
+     * Esta carpeta permite obtener la ruta de la ruta donde se almacenan los recursos
+     * @return string
+     */
+    public function getRutaRecursos(){
+        return $this->rutaRecursos;
+    }
+    
+    /**
+     * Esta función permite obtener la url de la carpeta destinada a recursos
+     * @return string
+     */
+    public function getUrlRecursos(){
+        return $this->urlRecursos;
+    }
+    /**
+     * Esta función retorna los alias de los recursos registrados
+     * @return array
+     */
+    public function getAlias(){
+        return $this->aliasRegistrados;
     }
 }

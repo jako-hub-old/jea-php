@@ -4,8 +4,10 @@
  * contiene los elementos necesarios para que un controlador cumpla con su función
  * @package sistema.componentes
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright (c) 2015, 2015
+ * 
+ * @property string $ID ID del controlador invocado
  */
 abstract class CControlador extends CComponenteAplicacion{
     
@@ -23,7 +25,7 @@ abstract class CControlador extends CComponenteAplicacion{
      * Nombre de la plantilla a usar para mostrar vistas
      * @var string 
      */
-    protected $plantilla = 'basica';
+    public $plantilla = 'basica';
     /**
      * Titulo de la pagína actual
      * @var string 
@@ -39,6 +41,10 @@ abstract class CControlador extends CComponenteAplicacion{
      * @var string 
      */
     private $nombreAccion;
+    /**
+     * Nombre de la acción que se invocará por defecto
+     * @var string 
+     */
     protected $accionPorDefecto = null;
     /**
      * Indica si el controlador pertenece a un módulo
@@ -51,33 +57,47 @@ abstract class CControlador extends CComponenteAplicacion{
         $this->ID = $ID;
         $this->nombreAccion = $accion;
         $this->rutaVistas = Sistema::resolverRuta('!aplicacion.vistas');
-        $this->tituloPagina = $ID . ' - ' . $accion;
+        $this->tituloPagina = ucwords($ID . ' - ' . $accion);
+    }
+    
+    /**
+     * Esta función es ejecutada antes de iniciar el controlador y sus componentes base
+     * @throws CExAplicacion
+     */
+    public function antesDeIniciar() {
+        # validamos si la acción invocada existe
+        $accion = $this->cargarAccion($this->nombreAccion);
+        
+        # validamos si hay un acción por defecto para cargar
+        $porDefecto = $this->accionPorDefecto !== null && 
+                method_exists($this, 'accion'.  ucfirst($this->accionPorDefecto));
+        
+        if(!$accion && !$porDefecto){
+            # se debe sobreescribir este comportamiento
+            throw new CExAplicacion("La acción solicitada no está creada ($this->nombreAccion)");
+        }else if($porDefecto){
+            $this->cargarAccion($this->accionPorDefecto);
+        }
     }
     
     /**
      * Se puede usar para inicializar valores del controlador, o escribir lógica
-     * para que se ejecute antes de llamar cualquier acción
+     * para que se ejecute antes de llamar cualquier acción del controlador
      */
-    public function inicializar(){}    
+    public function inicializar(){}
     
     /**
      * Esta función inicia el controlador
      */
     public function iniciar() {
-        $parametros = filter_input_array(INPUT_GET);
-        $accion = $this->cargarAccion($this->nombreAccion);
-        $porDefecto = $this->accionPorDefecto !== null && 
-                method_exists($this, 'accion'.  ucfirst($this->accionPorDefecto));
-        if(!$accion && !$porDefecto){
-            throw new CExAplicacion("La acción solicitada no está creada ($this->nombreAccion)");             
-        }else if($porDefecto){
-            $this->cargarAccion($this->accionPorDefecto);
-        }
+        # obtenemos los parametros en la url
+        $parametros = filter_input_array(INPUT_GET);        
         
+        # removemos el parametro de la ruta
         unset($parametros['r']);
         
         # validamos si hay parámetros para agregar a la función
-        # NOTA: solo se agregará un parámetro a la función
+        # NOTA: solo se agregará un parámetro a la función invocada
         if(count($parametros) > 0){
             $parametros = array_values($parametros);
             call_user_func(array($this, $this->accion->getFn()), $parametros[0]);
@@ -95,11 +115,15 @@ abstract class CControlador extends CComponenteAplicacion{
     public function redireccionar($ruta, $parametros = []){
         $partes = explode('/', $ruta);
         // si partes es igual a uno quiere decir que se esta invocando una acción del mismo controlador
-        if(count($partes) === 1){
+        if(count($partes) === 1 && !$this->perteneceAModulo){
             $ruta = $this->ID.'/'.$ruta;
+        } else if(count($partes) === 1 && $this->perteneceAModulo){
+            $ruta = Sistema::apl()->modulo->ID."/".$this->ID.'/'.$ruta;
         }
         $url = Sistema::apl()->crearUrl(array_merge(array($ruta), $parametros));
         header("location:".$url);
+        # tenemos que finalizar la ejecución de la aplicación
+        Sistema::fin();
     }
     
     /**
@@ -210,7 +234,7 @@ abstract class CControlador extends CComponenteAplicacion{
         $com = CComplemento::cargarComplemento($ruta);
         $com->asignarAtributos($opciones);
         $com->inicializar();
-        $com->iniciar();
+        return $com->iniciar();
     }
     
     /**

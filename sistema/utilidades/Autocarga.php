@@ -13,15 +13,15 @@
  * y retorna un mapa con todos los archivos encontrados allí, donde la clave
  * es el nombre del archivo y el valor la url donde este se encuentra
  * @param string $ruta
- * @param array $excluciones
+ * @param array $exclusiones
  * @return string[]
  */
-function __inspeccionarSistema($ruta, $excluciones = []){
+function __inspeccionarSistema($ruta, $exclusiones = []){
     $archivos = [];
     $directorios = scandir($ruta);
     foreach($directorios AS $archivo){
         // verificamos que el archivo que tenemos no esté en las excluciones
-        if(in_array($archivo, $excluciones) || in_array($ruta.DS.$archivo, $excluciones)){
+        if(in_array($archivo, $exclusiones) || in_array($ruta.DS.$archivo, $exclusiones)){
             continue;
         }
         
@@ -30,7 +30,7 @@ function __inspeccionarSistema($ruta, $excluciones = []){
         }else if(($archivo !== '..' && $archivo !== '.') && is_dir($ruta.DS.$archivo)){
             // si el archivo es un directorio, recorremos los archivos que estan dentro
             // del directorio también
-            $otrosArchivos = __inspeccionarSistema($ruta.DS.$archivo, $excluciones);
+            $otrosArchivos = __inspeccionarSistema($ruta.DS.$archivo, $exclusiones);
             $archivos = array_merge($archivos, $otrosArchivos);
         }
     }
@@ -43,8 +43,8 @@ function __autoload($_clase){
     // armar el mapa
     if(!defined('__MAPA_CLAVES__') && !defined('__MAPA_VALORES__')){
         $rutaBase = Sistema::getUbicacion();
-        $excluciones = require_once 'Excluciones.php';                
-        $mapaSitio = __inspeccionarSistema($rutaBase, $excluciones);
+        $exclusiones = require_once 'Exclusiones.php';                
+        $mapaSitio = __inspeccionarSistema($rutaBase, $exclusiones);
         $otrasImportaciones = [];
         if(defined('__IMPORTACIONES__')){
             $otrasImportaciones = explode(';', __IMPORTACIONES__);

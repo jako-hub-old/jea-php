@@ -7,7 +7,24 @@
 - Mod#7		: (CControlador) Se incorpora la carga de complementos
 - Mod#8		: (Alias.php) Se agrega un nuevo alias !siscoms
 - Mod#9		: (CAplicacionWeb) Se modifica el formato del array de alias
+- Mod#10	: (CComponenteAplicacion) [getID] Función para obtener el ID del componente
+- Mod#11	: (CBaseModelo) Se remueven las dos funciones de atributos() y tabla() para ponerlas en el modelo base
+- Mod#12	: (CModelo) Se agrgan las funciones tabla() y atributos() abstractas
+- Mod#13	: (CControlador) Se hace la propiedad plantilla publica para poder modificarla desde afuera
+- Mod#14	: (CControlador) Se reestructura el orden en que carga el controlador, ya que la  acción se cargaba al iniciar, se cambió a que carge antes de iniciar
+- Mod#15	: (CControlador) Se agrega la posibilidad de retornar el resultado de la ejecución de un componente
+- Mod#16	: (CMRecursos) Se permite el registro de assets primarias (Estas no pueden ser recuperadas)
+- Mod#17	: (CMRecursos) Se agregan funciones para obtener la ruta y url de los recuros, además de obtener los alias registrados
+- Mod#18	: (Exclucines.php) Se cambia el nombre del archivo a Exclusiones.php
+- Mod#19	: (Autocarga.php) Se cambia la variable excluciones por exclusiones (Error de ortografía)
+- Mod#20	: (CAplicacionWeb) Se depura el lalmado del controlador y se agregan nuevas funciones de obtención
+
 - Bug#1		: (CMRutas) [crearUrl()] Se arregla un bug al crear urls en la aplicación
+- Bug#2		: (CConectorMySql) [conectar] Se estaban recuperando mal las palabras acentuadas debido a que no se enviaba el charset a la conexión
+- Bug#3		: (CMySqlDriver) [ejecutarConsulta] Se estaban limpiando los datos del controlador al ejecutar una consultas
+- Bug#4		: (CControlador) Se corrige la redirección en caso de encontrarnos en un módulo
+- Bug#5		: (Sistema) Se corrigió un error en la función de resolver ruta, si la ruta era un solo elemento se repetía
+
 - New#1		: (CModulo) Se incorpora la clase base para todos los módulos
 - New#2		: (CComplemento) Se incorpora la posibilidad de crear componentes
 - New#3		: (CHtml) Se incorpora un asistente para la generación de html 

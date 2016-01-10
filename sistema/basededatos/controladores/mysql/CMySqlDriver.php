@@ -68,7 +68,6 @@ class CMySqlDriver extends CControladorBaseDeDatos{
      */
     private function ejecutarConsulta(){
         $resultado = CConectorMySql::ejecutarConsulta($this->_consulta);
-        $this->limpiar();
         return $resultado;
     }
     

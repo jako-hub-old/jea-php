@@ -4,7 +4,7 @@
  * la lógica para realizar operaciones especificamente con mysql
  * @package sistema.basededatos.controladores.mysql
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  */
 final class CConectorMySql extends CConectorBaseDeDatos 
@@ -52,6 +52,8 @@ final class CConectorMySql extends CConectorBaseDeDatos
         if(!self::$instancia->recursoBd){
             throw new CExBaseDeDatos("Error al conectarse a la base de datos: ".  mysqli_connect_error());
         }
+        # definimos el charset a usar por mysql
+        mysqli_set_charset(self::$instancia->recursoBd, self::$instancia->charset);
         return self::$instancia->recursoBd;
     }
     

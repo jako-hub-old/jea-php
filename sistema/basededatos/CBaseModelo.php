@@ -74,20 +74,7 @@ abstract class CBaseModelo {
             $this->_atributos[$columna] = $valorPorDefecto;
         }
     }
-    
-    /**
-     * Esta función debe ser implementada para devolver el nombre de la tabla
-     * que representa el modelo
-     * @return string Retorna el nombre de la tabla que representa el modelo
-     */
-    public abstract function tabla();
-    
-    /**
-     * Esta función debe ser implementada para devolver el un array con las 
-     * columnas de la tabla representada
-     */
-    public abstract function atributos();
-    
+        
     /************************************************
      *               Funciones magicas              *
      ************************************************/    

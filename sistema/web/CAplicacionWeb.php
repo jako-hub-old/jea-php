@@ -4,7 +4,7 @@
  * 
  * @package sistema.web
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.2
+ * @version 1.0.3
  * @copyright (c) 2015, jakop
  */
 /**
@@ -74,6 +74,7 @@ final class CAplicacionWeb {
             '!componentes' => $this->rutaBase. DS .'protegido' . DS . 'componentes',
             '!raiz' => $this->rutaBase,
             '!publico' => $this->rutaBase. DS . 'publico',
+            '!ext' => $this->rutaBase. DS .'protegido' . DS . 'extensiones',
         ]);
     }
     
@@ -128,6 +129,9 @@ final class CAplicacionWeb {
     private function flujoNormal(){
         $this->controlador = $this->cargarControlador();
         $this->controlador->inicializar();
+        $this->controlador->antesDeIniciar();
+        # definimos la ruta dependiendo del controlador invocado y la acción cargada
+        $this->ruta = $this->controlador->ID."/".$this->controlador->getAccion();
         $this->controlador->iniciar();
     }
     
@@ -142,6 +146,8 @@ final class CAplicacionWeb {
         $this->modulo = CModulo::cargarModulo($nombreModulo);
         $this->modulo->setControlador($this->nombreControlador, $this->nombreAccion);
         $this->modulo->antesDeIniciar();
+        # definimos la ruta de la aplicación dependiendo de los componentes cargados
+        $this->ruta = $this->modulo->ID."/".$this->modulo->controlador->ID."/".$this->modulo->controlador->getAccion();
         $this->modulo->iniciar();
     }
     
@@ -184,7 +190,7 @@ final class CAplicacionWeb {
      */
     private function prepararRuta(){
         $get = filter_input_array(INPUT_GET);
-        $partes = explode('/', $get['r']);        
+        $partes = isset($get['r'])? explode('/', $get['r']) : [];
         # la petición es hacia un módulo se si cumplen estas condiciones
         # los módulos tienen prioridad sobre los controladores
         $esModulo = (count($partes) == 3) ||
@@ -203,7 +209,6 @@ final class CAplicacionWeb {
             $this->nombreControlador = isset($partes[0]) && !empty($partes[0])? $partes[0] : $this->nombreControlador;
             $this->nombreAccion = isset($partes[1]) && !empty($partes[0])? $partes[1] : $this->nombreAccion;            
         }
-        
     }
     
     /**
@@ -410,5 +415,21 @@ final class CAplicacionWeb {
     public function getConfiguracion($nombre){
         return isset($this->configuraciones[$nombre])? 
             $this->configuraciones[$nombre] : false;
+    }
+    
+    /**
+     * Esta función retorna la ruta invocada para la aplicación
+     * @return string
+     */
+    public function getRuta(){
+        return $this->ruta;
+    }
+    
+    /**
+     * Esta función retorna el módulo cargado en la aplicación
+     * @return CModulo
+     */
+    public function getModulo(){
+        return $this->modulo;
     }
 }

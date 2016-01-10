@@ -26,13 +26,20 @@ class CMSesion {
     private $estado;
     
     public function __construct() {
+        # se establece un id para la sesión de cada aplicación
         $this->idSesion = Sistema::apl()->ID;
+        # si la sesión no ha iniciado la iniciamos
         if(!isset($_SESSION)){
-            session_start();            
+            session_start();
         }
-        
+        # si la sesión de la aplicación no está registrada se registra
         if(!isset($_SESSION[$this->idSesion])){
             $_SESSION[$this->idSesion] = [];
+        }
+        # si no está registrado el array de notificaiones lo registramos,
+        # esto nos ahorra validar a la hora de preguntar por notificaciones
+        if(!isset($_SESSION[$this->idSesion][self::_ID_NOTI_])){
+            $_SESSION[$this->idSesion][self::_ID_NOTI_] = [];
         }
         
         $this->estado = session_status();

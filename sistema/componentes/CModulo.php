@@ -3,8 +3,10 @@
  * Esta clase es la super clase de todos los módulos de la aplicación
  * @package sistema.componentes
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2016, jakop
+ * 
+ * @property CControlador $controlador Controlador invocado en el módulo;
  */
 abstract class CModulo extends CComponenteAplicacion{
     /**
@@ -38,6 +40,12 @@ abstract class CModulo extends CComponenteAplicacion{
      */
     protected $_accionPorDefecto = 'inicio';
     
+    /**
+     * Plantilla a cargar por defecto en el módulo
+     * @var string 
+     */
+    protected $_plantilla = 'basica';
+    
     public function __construct($id, $ruta) {
         # solo las variables seteables tendrán guíon bajo
         $this->c = '_';
@@ -46,26 +54,35 @@ abstract class CModulo extends CComponenteAplicacion{
         $this->inicializar();
     }
     
+    public function __get($nombre){
+        $nombre = "get" . ucfirst($nombre);
+        if(method_exists($this, $nombre)){
+            return $this->$nombre();
+        }
+    }
+    
     /**
      * Esta función inicializa los componentes básicos del módulo
      */
-    private function inicializar(){
+    public function inicializar(){
         $this->rutaVistas = $this->ruta.DS.'vistas';
         $this->rutaControladores = $this->ruta.DS.'controladores';
     }
     
     /**
-     * Esta función puede ser escrita si se desea agregar funcionalidad 
+     * Esta función inicializa en controlador invocado en el módulo
      * antes de que el módulo inicie
      */
-    public function antesDeIniciar() {}
+    public function antesDeIniciar() {
+        $this->controlador->plantilla = $this->_plantilla;
+        $this->controlador->inicializar();
+        $this->controlador->antesDeIniciar();
+    }
     
     /**
      * Esta función inicia el módulo
      */
     public function iniciar() {
-        $this->controlador->inicializar();
-        $this->controlador->antesDeIniciar();
         $this->controlador->iniciar();
     }
     
@@ -170,5 +187,13 @@ abstract class CModulo extends CComponenteAplicacion{
             'clase' => $clase,
             'config' => $configuracion
         );
+    }
+    
+    /**
+     * Esta función retorna el controlador invocado en el módulo
+     * @return CControlador
+     */
+    public function getControlador(){
+        return $this->controlador;
     }
 }

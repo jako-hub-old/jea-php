@@ -1,13 +1,42 @@
 <?php
-
+/**
+ * Esta clase es la base para cualquier complemento 
+ * @package sistema.web
+ * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
+ * @version 1.0.0
+ * @copyright (c) 2016, jakop
+ * 
+ */
 abstract class CComplemento {
+    /**
+     * Html generado
+     * @var string 
+     */
     protected $html;
-    protected $opcionesHtml = [];
+    /**
+     * Parametros para el html del complemento
+     * @var array 
+     */
+    protected $_opcionesHtml = [];
     
+    /**
+     * Esta función debe ser implementada para poner en ella lógica 
+     * que inicialice el complemento
+     */
     public abstract function inicializar();
     
+    /**
+     * Esta función debe ser implementada para poner la logíca de 
+     * ejecución del complemento
+     */
     public abstract function iniciar();
     
+    /**
+     * Esta función es la que asigna los atributos a todo componente
+     * <b>Nota</b>: Solo se asignarán valores a las variables cuyo nombre
+     * empiece con _
+     * @param array $atributos
+     */
     public function asignarAtributos($atributos = []){
         foreach ($atributos AS $nombre=>$valor) {
             if(property_exists($this, "_$nombre")){

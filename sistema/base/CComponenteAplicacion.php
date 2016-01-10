@@ -4,7 +4,7 @@
  * no es instancia de esta clase no será aceptado como componente
  * @package sistema.base
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.2
+ * @version 1.0.3
  * @copyright (c) 2015, jakop
  */
 
@@ -71,5 +71,12 @@ abstract class CComponenteAplicacion {
      * Todo componente de aplicación deberá tener una función que no inicie
      */
     public abstract function iniciar();    
-    
+            
+    /**
+     * Esta función retorna el id del componente
+     * @return string
+     */
+    public function getID(){
+        return $this->ID;
+    }    
 }

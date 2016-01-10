@@ -147,6 +147,6 @@ final class CHtml {
                     function($k, $v){ return "$k=\"$v\""; },
                     array_keys($opciones),
                     $opciones
-                ))." ";
+                ));
     }
 }
