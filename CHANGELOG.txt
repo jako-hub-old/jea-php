@@ -18,6 +18,9 @@
 - Mod#18	: (Exclucines.php) Se cambia el nombre del archivo a Exclusiones.php
 - Mod#19	: (Autocarga.php) Se cambia la variable excluciones por exclusiones (Error de ortografía)
 - Mod#20	: (CAplicacionWeb) Se depura el lalmado del controlador y se agregan nuevas funciones de obtención
+- Mod#21	: (CComponenteAplicacion) Se agrega una función para cargar componentes
+- Mod#22	: (CAplicacionWeb) Se habilita el llamado de componentes
+- Mod#23	: (CMSesion) Se agrega una nueva función para saber si un atributo fue registrado
 
 - Bug#1		: (CMRutas) [crearUrl()] Se arregla un bug al crear urls en la aplicación
 - Bug#2		: (CConectorMySql) [conectar] Se estaban recuperando mal las palabras acentuadas debido a que no se enviaba el charset a la conexión
@@ -29,6 +32,7 @@
 - New#2		: (CComplemento) Se incorpora la posibilidad de crear componentes
 - New#3		: (CHtml) Se incorpora un asistente para la generación de html 
 - New#4		: (CBoot) Se incorpora un asistente para la generacdión de html con bootstrap3 
+- New#5		: (CComponenteUsuario) Se incorpora una clase plantilla para los componentes de usuario
 
 ------------------------------
 Version 1.0.1 Enero 03 de 2016

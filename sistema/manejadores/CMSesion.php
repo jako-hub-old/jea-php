@@ -169,5 +169,14 @@ class CMSesion {
      */
     public function existeNotificacion($nombre){
         return key_exists($nombre, $_SESSION[$this->idSesion][self::_ID_NOTI_]);
-    }    
+    }
+    
+    /**
+     * Esta función permite validar si existe un atributo en la sesión de la aplicación
+     * @param string $nombre
+     * @return mixed
+     */
+    public function existeAtributo($nombre){
+        return key_exists($nombre, $_SESSION[$this->idSesion]);
+    }
 }

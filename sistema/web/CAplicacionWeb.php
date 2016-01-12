@@ -4,7 +4,7 @@
  * 
  * @package sistema.web
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.3
+ * @version 1.0.4
  * @copyright (c) 2015, jakop
  */
 /**
@@ -24,6 +24,7 @@
  * @property string $nombreAccion Nombre de la acción invocada
  * @property string $nombreModulo Nombre del módulo invocado
  * @property CBDComponente $bd Componente encargado de la conexión de base de datos
+ * @property CComponenteUsuario $usuario Componente destinado al inicio de sesión de usuarios
  */
 
 final class CAplicacionWeb {
@@ -59,6 +60,11 @@ final class CAplicacionWeb {
      *  Componentes                                                *
      ***************************************************************/
     private $bd;
+    /**
+     * array con todos los componentes de la aplicación
+     * @var array 
+     */
+    private $_componentes = [];
    
     private function __construct($rutaConfiguraciones){
         $this->rutaConf = $rutaConfiguraciones;
@@ -303,10 +309,33 @@ final class CAplicacionWeb {
      * @return mixed
      */
     public function __get($nombre) {
-        if(method_exists($this, 'get'.  ucfirst($nombre))){
+        # verificamos si el atributo invocado esta registrado en los componentes
+        if($this->buscarEnComponentes($nombre)){
+            return $this->_componentes[$nombre];
+        } else if(method_exists($this, 'get'.  ucfirst($nombre))){
             return $this->{'get'.  ucfirst($nombre)}();
         }
-    }    
+    }
+    
+    /**
+     * Esta función verifica si un atributo invocado para la aplicación está
+     * registrado en los componentes, si es así, se instancia e inicializa el componente
+     * @param string $nombre
+     * @return boolean
+     */
+    private function buscarEnComponentes($nombre){        
+        $coms = $this->getConfiguracion("componentes");
+        # si encontramos el componente lo cargamos
+        if(key_exists($nombre, $this->_componentes)){
+            return true;
+        } else if($nombre !== "bd" && key_exists($nombre, $coms)){
+            $componente = CComponenteAplicacion::cargarComponente($coms[$nombre]);
+            $this->_componentes[$nombre] = $componente;
+            return true;
+        }
+        
+        return false;
+    }
     
     /***************************************************************
      *  A partir de aquí se encuentran todos los atributos         *

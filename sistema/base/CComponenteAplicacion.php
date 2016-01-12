@@ -68,9 +68,9 @@ abstract class CComponenteAplicacion {
     public function antesDeIniciar(){}
     
     /**
-     * Todo componente de aplicación deberá tener una función que no inicie
+     * Todo componente podrá sobreescribir la función de iniciar
      */
-    public abstract function iniciar();    
+    public function iniciar(){}
             
     /**
      * Esta función retorna el id del componente
@@ -78,5 +78,28 @@ abstract class CComponenteAplicacion {
      */
     public function getID(){
         return $this->ID;
-    }    
+    }
+    
+    /**
+     * Esta función permite cargar un componente, de inmediato lo inicializa
+     * @param array $configs
+     * @return CComponenteAplicacion
+     * @throws CExAplicacion
+     */
+    public static function cargarComponente($configs){
+        $ruta = $configs['ruta'];
+        $clase = $configs['clase'];
+        #eliminamos estas dos pociciones, el resto son configuraciones
+        unset($configs['ruta'], $configs['clase']);
+        $archivo = Sistema::resolverRuta("$ruta.$clase", true);
+        if(!file_exists($archivo)){
+            throw new CExAplicacion("No se encuentra el componente $clase ");
+        }
+        Sistema::importar($archivo, false);
+        $componente = new $clase();
+        $componente->asignarAtributos($configs);
+        $componente->antesDeIniciar();
+        $componente->iniciar();
+        return $componente;
+    }
 }
