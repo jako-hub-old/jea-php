@@ -4,7 +4,7 @@
  * contiene los elementos necesarios para que un controlador cumpla con su función
  * @package sistema.componentes
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.2
+ * @version 1.0.3
  * @copyright (c) 2015, 2015
  * 
  * @property string $ID ID del controlador invocado
@@ -51,9 +51,21 @@ abstract class CControlador extends CComponenteAplicacion{
      * @var boolean 
      */
     private $perteneceAModulo = false;
+    /**
+     * Representación de la variable global $_POST, esta variable ya viene
+     * filtrada con filter_input_array
+     * @var array 
+     */
+    protected $_p;
+    /**
+     * Representación de la variable global $_GET, esta variable ya viene
+     * filtrada con filter_input_array
+     * @var array 
+     */
+    protected $_g;
     
 
-    public function __construct($ID =__CLASS__, $accion) {
+    public function __construct($ID, $accion) {
         $this->ID = $ID;
         $this->nombreAccion = $accion;
         $this->rutaVistas = Sistema::resolverRuta('!aplicacion.vistas');
@@ -71,11 +83,10 @@ abstract class CControlador extends CComponenteAplicacion{
         # validamos si hay un acción por defecto para cargar
         $porDefecto = $this->accionPorDefecto !== null && 
                 method_exists($this, 'accion'.  ucfirst($this->accionPorDefecto));
-        
         if(!$accion && !$porDefecto){
             # se debe sobreescribir este comportamiento
             throw new CExAplicacion("La acción solicitada no está creada ($this->nombreAccion)");
-        }else if($porDefecto){
+        } else if(!$accion && $porDefecto){
             $this->cargarAccion($this->accionPorDefecto);
         }
     }
@@ -91,10 +102,15 @@ abstract class CControlador extends CComponenteAplicacion{
      */
     public function iniciar() {
         # obtenemos los parametros en la url
-        $parametros = filter_input_array(INPUT_GET);        
+        $parametros = filter_input_array(INPUT_GET);
         
         # removemos el parametro de la ruta
         unset($parametros['r']);
+        
+        # seteamos de una vez $_GET y $_POST para el controlador
+        $this->_g = $parametros;
+        $this->_p = filter_input_array(INPUT_POST);
+        if($this->_p == null){ $this->_p = []; }
         
         # validamos si hay parámetros para agregar a la función
         # NOTA: solo se agregará un parámetro a la función invocada

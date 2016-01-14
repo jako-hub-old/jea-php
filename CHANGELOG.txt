@@ -1,3 +1,7 @@
+-------------------------------
+Versión 1.0.2 Enero 13 de 2016
+-------------------------------
+
 - Mod#1		: (CComponenteAplicacion) Se agrega un identificador para diferenciar que atributos son seteables por un array
 - Mod#2		: (CControlador) Se incorporan mejoras para adaptar el controlador al manejo de módulos y se agregan comentarios
 - Mod#3		: (CMRecursos) [registrarRecurso()] se mejora el método para permitir elegir si se desea copiar el archivo a los recursos
@@ -27,12 +31,15 @@
 - Bug#3		: (CMySqlDriver) [ejecutarConsulta] Se estaban limpiando los datos del controlador al ejecutar una consultas
 - Bug#4		: (CControlador) Se corrige la redirección en caso de encontrarnos en un módulo
 - Bug#5		: (Sistema) Se corrigió un error en la función de resolver ruta, si la ruta era un solo elemento se repetía
+- Bug#6		: (CControlador) Se estaba priorizando la acción por defecto del controlador
 
 - New#1		: (CModulo) Se incorpora la clase base para todos los módulos
 - New#2		: (CComplemento) Se incorpora la posibilidad de crear componentes
 - New#3		: (CHtml) Se incorpora un asistente para la generación de html 
 - New#4		: (CBoot) Se incorpora un asistente para la generacdión de html con bootstrap3 
 - New#5		: (CComponenteUsuario) Se incorpora una clase plantilla para los componentes de usuario
+- New#6		: (CFormulario) Se incorpora una clase para crear formularios de manera más comoda con los modelos
+- New#7		: (CBForm) Se incorpora una clase para crear formularios con con estilso de bootstrap
 
 ------------------------------
 Version 1.0.1 Enero 03 de 2016

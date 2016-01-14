@@ -143,7 +143,7 @@ final class CBoot {
      *              </ul>
      * @return type
      */    
-    public static function textAddOn($valor = '', $opciones = []){
+    private static function inputAddOn($valor = '', $tipo = 'text', $opciones = []){
         $pre = '';
         $pos = '';
         # agregamos el tokken que se prepone
@@ -166,7 +166,7 @@ final class CBoot {
         $group = (isset($opciones['group']) && $opciones['group'] == true);
         unset($opciones['group']);
         
-        $input = self::input('text', $valor, $opciones);
+        $input = self::input($tipo, $valor, $opciones);
         $html = ($pre !== '' || $pos !== '')?
             CHtml::e('div', $pre.$input.$pos, ['class' => 'input-group']) : 
             $input;
@@ -176,6 +176,15 @@ final class CBoot {
             $html;                
     }
     
+    public static function textAddOn($valor = '', $opciones = []){
+        return self::inputAddOn($valor, 'text', $opciones);
+    }
+    
+    public static function passwordAddOn($valor = '', $opciones = []){
+        return self::inputAddOn($valor, 'password', $opciones);
+    }
+
+
     /**
      * Esta función crea un textarea con estilos de bootstrap
      * @param string $valor
@@ -200,6 +209,11 @@ final class CBoot {
      */
     public static function select($seleccion = '', $elementos = [], $opciones = []){
         $opciones['class'] = isset($opciones['class'])? "form-control ".$opciones['class'] : 'form-control';
+        # si hay que agrupar
+        if(isset($opciones['group']) && $opciones['group'] == true){
+            unset($opciones['group']);
+            return CHtml::e('div', CHtml::lista($seleccion, $elementos, $opciones),['class' => 'form-group']);
+        }
         return CHtml::lista($seleccion, $elementos, $opciones);
     }
     

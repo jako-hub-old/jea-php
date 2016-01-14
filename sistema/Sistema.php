@@ -5,7 +5,7 @@
  * 
  * @package sistema
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright (c) 2015, jakop
  */
 final class Sistema {

@@ -3,7 +3,7 @@
  * Esta clase es el asistente para la generación de html
  * @package sistema.web.asistentes
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2014, jakop
  */
 final class CHtml {
@@ -79,14 +79,14 @@ final class CHtml {
         $items = [];
         # hayamos si hay valor por defecto
         if(isset($opciones['defecto'])){
-            $items[] = self::e('option', $opciones['defecto']);
+            $items[] = self::e('option', $opciones['defecto'], ['value' => '']);
             unset($opciones['defecto']);
         }
         # construimos las opciones
         foreach ($elementos AS $valor=>$texto){
             $opcionesE = ['value' => $valor];
             # la seleccion == '' puede ser igual a cero, por eso toca validar contra nulo
-            if($seleccion !== '' && $seleccion == $valor){
+            if($seleccion !== '' && $seleccion !== null && $seleccion == $valor){
                 $opcionesE['selected'] = 'selected';
             }
             $items[] = self::e('option', $texto, $opcionesE);
