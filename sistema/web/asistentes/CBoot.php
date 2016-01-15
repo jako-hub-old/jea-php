@@ -103,8 +103,10 @@ final class CBoot {
         $opciones['class'] = isset($opciones['class'])? "form-control ".$opciones['class'] : 'form-control';
         
         if(isset($opciones['group'])){
+            # construimos el label, también si hay opciones para el label se las pasamos
             $label = isset($opciones['label'])? 
-                CHtml::e("label", $opciones['label']) : "";
+                CHtml::e("label", $opciones['label'], isset($opciones['opcionesLabel'])? $opciones['opcionesLabel'] : []) :
+                "";
             unset($opciones['group']);
             unset($opciones['label']);
             return CHtml::e('div', $label.CHtml::input($tipo, $valor, $opciones), ['class' => 'form-group']);

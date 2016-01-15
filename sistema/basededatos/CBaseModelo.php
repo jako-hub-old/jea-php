@@ -4,11 +4,13 @@
  * y devuelve los resultados generados por las consultas
  * @package sistema.basededatos
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jako 
  */
 
 abstract class CBaseModelo {
+    const PERTENECE_A = 1;
+    const CONTENGAN_A = 2;
     
     /************************************************
      *               Tipos de consulta              *
@@ -35,6 +37,17 @@ abstract class CBaseModelo {
      */
     private $_atributos = [];
     /**
+     * Contiene las relaciones definidas en el modelo
+     * @var array 
+     */
+    private $_relaciones = [];
+    /**
+     * Contiene los modelos con que se relaciona el modelo actual
+     * @var array 
+     */
+    private $_relacionesModelos = [];
+    
+    /**
      * Guardará el nombre del campo que es la clave primaria
      * @var string 
      */
@@ -48,31 +61,41 @@ abstract class CBaseModelo {
     /**
      * Esta función construye los atributos del modelo y define cual es el atributo
      * primary key, adicionalmente si en el array de columnas se encuentra definido
-     * el valor por defecto, este será asignado
+     * el valor por defecto['def'], este será asignado
      */
     private function construirColumnas(){
         $columnas = $this->atributos();
         foreach ($columnas AS $clave=>$valor){
-            // verificamos si la clave del array de columnas es entero o es string
-            // si es string significa que probablemente el valor es array y tiene otras caracteristicas
+            # verificamos si la clave del array de columnas es entero o es string
+            # si es string significa que probablemente el valor es array y tiene otras caracteristicas
             if(is_string($clave)){ 
                 $columna = $clave;                 
             } else { 
                 $columna = $valor; 
             }
-            // buscamos la primary key
+            # buscamos la primary key
             if(is_array($valor) && array_search('pk', $valor) !== false){ 
                 $this->_pk = $clave;
             }
-            // buscamos si hay valores por defecto
-            if(is_array($valor) && key_exists('val', $valor)){
-                $valorPorDefecto = $valor['val'];
+            # buscamos si hay valores por defecto
+            if(is_array($valor) && key_exists('def', $valor)){
+                $valorPorDefecto = $valor['def'];
             } else {
                 $valorPorDefecto = null;
             }
-            
+            # obtenemos las relaciones definidas en el modelo
+            $this->_relaciones = $this->relaciones();
+            # creamos los atributos del modelo
             $this->_atributos[$columna] = $valorPorDefecto;
         }
+    }
+    
+    /**
+     * Esta función puede ser sobreescrita para retornar las relaciones comprendidas en el modelo
+     * @return array
+     */
+    protected function relaciones(){
+        return [];
     }
         
     /************************************************
@@ -88,9 +111,45 @@ abstract class CBaseModelo {
     
     public function __get($nombre){
         if(method_exists($this, "get" . ucfirst($nombre))){
+            # si el atributo pedido tiene una función get creada, la ejecutamos
             return $this->{"get".ucfirst($nombre)}();
         } else if(key_exists($nombre, $this->_atributos)) {
+            # si el atributo pedido se encuentra en el array de atributos, lo devolvemos
             return $this->_atributos[$nombre];
+        } else if(key_exists($nombre, $this->_relaciones) && !key_exists($nombre, $this->_relacionesModelos)){
+            # si el atributo pedido se encuentra en las relaciones, pero no ha sido cargado, lo cargamos
+            $this->cargarRelacion($nombre, $this->_relaciones[$nombre]);
+            return $this->_relacionesModelos[$nombre];
+        } else if(key_exists($nombre, $this->_relacionesModelos)){
+            # si el atributo se encuentra en las relaciones cargadas, la retornamos
+            return $this->_relacionesModelos[$nombre];
+        }
+    }
+    
+    /**
+     * Esta función se encarga de setear en el modelo la relación
+     * @param string $nombre nombre del campo solicitado
+     * @param array $relacion relación establecida en el modelo
+     * @throws CExAplicacion Si la relación no fue definida correctamente [tipo, modelo, campo fk]
+     */
+    private function cargarRelacion($nombre, $relacion){
+        # la configuración de la relación debe tener tres parametros
+        if(count($relacion) < 3){
+            throw new CExAplicacion("La relación especificada no es valida <b>Faltan parámetros</b>");
+        }
+        
+        $nModelo = $relacion[1];
+        $campo = $relacion[2];
+        if($relacion[0] === self::PERTENECE_A){
+            # si la relación es tipo PERTENECE A
+            $modelo = $nModelo::modelo()->porPk($this->_atributos[$campo]);
+            $this->_relacionesModelos[$nombre] = $modelo;
+        } else if($relacion[0] == self::CONTENGAN_A){
+            # si la relación es de tipo CONTENGAN A
+            $modelos = $nModelo::modelo()->listar([
+                'where' => "$campo='" . $this->_atributos[$this->_pk] . "'",
+            ]);
+            $this->_relacionesModelos[$nombre] = $modelos;
         }
     }
 

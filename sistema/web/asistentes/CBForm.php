@@ -16,7 +16,9 @@ class CBForm extends CFormulario{
      */
     public function campoTexto($modelo = null, $atributo = '', $opciones = array()) {
         $opHtml = $this->obtenerOpciones($modelo, $atributo, $opciones);
-        return CBoot::text($modelo->$atributo, $opHtml);
+        $label = $this->obtenerEtiqueta($opHtml);
+        $input = CBoot::text($modelo->$atributo, $opHtml);
+        return CHtml::e('div', $label.$input, ['class' => 'form-group']);
     }
     
     /**
@@ -28,7 +30,9 @@ class CBForm extends CFormulario{
      */
     public function areaTexto($modelo = null, $atributo = '', $opciones = array()) {
         $opHtml = $this->obtenerOpciones($modelo, $atributo, $opciones);
-        return CBoot::textArea($modelo->$atributo, $opHtml);
+        $label = $this->obtenerEtiqueta($opHtml);
+        $text = CBoot::textArea($modelo->$atributo, $opHtml); 
+        return CHtml::e('div', $label.$text, ['class' => 'form-group']);
     }
     /**
      * Esta función permite generar una lista de selección con estilos de bootstrap
@@ -40,6 +44,8 @@ class CBForm extends CFormulario{
      */
     public function lista($modelo = null, $atributo = '', $elementos = array(), $opciones = array()) {
         $opHtml = $this->obtenerOpciones($modelo, $atributo, $opciones);
-        return CBoot::select($modelo->$atributo, $elementos, $opHtml);
+        $label = $this->obtenerEtiqueta($opHtml);
+        $lista = CBoot::select($modelo->$atributo, $elementos, $opHtml);
+        return CHtml::e('div', $label.$lista, ['class' => 'form-group']);
     }
 }

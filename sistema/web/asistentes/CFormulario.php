@@ -153,9 +153,24 @@ class CFormulario {
             'name' => ucfirst($nModelo)."[$atributo]",
             'id' => $nModelo."_".$atributo,
         ];
+        
+        # buscamos si hay label
+        if(isset($opciones['label']) && $opciones['label'] == true){
+            $opciones['label'] = $modelo->obtenerEtiqueta($atributo);
+        }
+        
         # lo que retornamos es una mezcla entre las opciones ingresadas y las básicas
         # si hay posiciones con el mismo nombre en las opciones ingresadas, estas
         # sobreescribirán el valor de las opciones básicas
         return array_merge($opcBasicas, $opciones);
+    }
+    
+    public function obtenerEtiqueta(&$opHtml = []){
+        $label = '';
+        if(isset($opHtml['label'])){
+            $label = CHtml::e('label', $opHtml['label'], ['for' => $opHtml['id']]);
+            unset($opHtml['label']);
+        }
+        return $label;
     }
 }

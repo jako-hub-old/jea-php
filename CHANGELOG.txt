@@ -1,45 +1,59 @@
 -------------------------------
+Versión 1.0.3
+-------------------------------
+
+- Mod#1		: (CBaseModelo) Se incorpora el manejo de relaciones (Jako)
+- Mod#2		: (CModelo) [obtenerEtiqueta] Se incorpora una función para obtener los alias de los atributos (Jako)
+- Mod#3		: (CBForm) Se mejora el funcionamiento de algnunas funciones (Jako)
+- Mod#4		: (CBoot) Se mejora el funcionamiento de algnunas funciones (Jako)
+- Mod#5		: (CFormulario) Se mejora el funcionamiento de algunas funciones (Jako)
+
+- Bug#1		: (CMySqlDriver) Se conservan las condiciones de consultas anteriores	(Jako)
+
+- New#1		: (CHtml) [modeloLista] Se incorpora una nueva función para convertir un array de modelos en una lista de elementos (Jako)
+
+-------------------------------
 Versión 1.0.2 Enero 13 de 2016
 -------------------------------
 
-- Mod#1		: (CComponenteAplicacion) Se agrega un identificador para diferenciar que atributos son seteables por un array
-- Mod#2		: (CControlador) Se incorporan mejoras para adaptar el controlador al manejo de módulos y se agregan comentarios
-- Mod#3		: (CMRecursos) [registrarRecurso()] se mejora el método para permitir elegir si se desea copiar el archivo a los recursos
-- Mod#4		: (CAplicaionWeb) Se incorpora la funcionalidad para controlar el flujo con módulo
-- Mod#5		: (CControladorBaseDeDatos) Se añaden los prefijos para las tablas en la base de datos
-- Mod#6		: (CBDComponente) Se añaden los prefijos para las tablas en la base de datos
-- Mod#7		: (CControlador) Se incorpora la carga de complementos
-- Mod#8		: (Alias.php) Se agrega un nuevo alias !siscoms
-- Mod#9		: (CAplicacionWeb) Se modifica el formato del array de alias
-- Mod#10	: (CComponenteAplicacion) [getID] Función para obtener el ID del componente
-- Mod#11	: (CBaseModelo) Se remueven las dos funciones de atributos() y tabla() para ponerlas en el modelo base
-- Mod#12	: (CModelo) Se agrgan las funciones tabla() y atributos() abstractas
-- Mod#13	: (CControlador) Se hace la propiedad plantilla publica para poder modificarla desde afuera
-- Mod#14	: (CControlador) Se reestructura el orden en que carga el controlador, ya que la  acción se cargaba al iniciar, se cambió a que carge antes de iniciar
-- Mod#15	: (CControlador) Se agrega la posibilidad de retornar el resultado de la ejecución de un componente
-- Mod#16	: (CMRecursos) Se permite el registro de assets primarias (Estas no pueden ser recuperadas)
-- Mod#17	: (CMRecursos) Se agregan funciones para obtener la ruta y url de los recuros, además de obtener los alias registrados
-- Mod#18	: (Exclucines.php) Se cambia el nombre del archivo a Exclusiones.php
-- Mod#19	: (Autocarga.php) Se cambia la variable excluciones por exclusiones (Error de ortografía)
-- Mod#20	: (CAplicacionWeb) Se depura el lalmado del controlador y se agregan nuevas funciones de obtención
-- Mod#21	: (CComponenteAplicacion) Se agrega una función para cargar componentes
-- Mod#22	: (CAplicacionWeb) Se habilita el llamado de componentes
-- Mod#23	: (CMSesion) Se agrega una nueva función para saber si un atributo fue registrado
+- Mod#1		: (CComponenteAplicacion) Se agrega un identificador para diferenciar que atributos son seteables por un array	(jako)
+- Mod#2		: (CControlador) Se incorporan mejoras para adaptar el controlador al manejo de módulos y se agregan comentarios	(jako)
+- Mod#3		: (CMRecursos) [registrarRecurso()] se mejora el método para permitir elegir si se desea copiar el archivo a los recursos	(jako)
+- Mod#4		: (CAplicaionWeb) Se incorpora la funcionalidad para controlar el flujo con módulo	(jako)
+- Mod#5		: (CControladorBaseDeDatos) Se añaden los prefijos para las tablas en la base de datos	(jako)
+- Mod#6		: (CBDComponente) Se añaden los prefijos para las tablas en la base de datos	(jako)
+- Mod#7		: (CControlador) Se incorpora la carga de complementos	(jako)
+- Mod#8		: (Alias.php) Se agrega un nuevo alias !siscoms	(jako)
+- Mod#9		: (CAplicacionWeb) Se modifica el formato del array de alias	(jako)
+- Mod#10	: (CComponenteAplicacion) [getID] Función para obtener el ID del componente	(jako)
+- Mod#11	: (CBaseModelo) Se remueven las dos funciones de atributos() y tabla() para ponerlas en el modelo base	(jako)
+- Mod#12	: (CModelo) Se agrgan las funciones tabla() y atributos() abstractas	(jako)
+- Mod#13	: (CControlador) Se hace la propiedad plantilla publica para poder modificarla desde afuera	(jako)
+- Mod#14	: (CControlador) Se reestructura el orden en que carga el controlador, ya que la  acción se cargaba al iniciar, se cambió a que carge antes de iniciar	(jako)
+- Mod#15	: (CControlador) Se agrega la posibilidad de retornar el resultado de la ejecución de un componente	(jako)
+- Mod#16	: (CMRecursos) Se permite el registro de assets primarias (Estas no pueden ser recuperadas)	(jako)
+- Mod#17	: (CMRecursos) Se agregan funciones para obtener la ruta y url de los recuros, además de obtener los alias registrados	(jako)
+- Mod#18	: (Exclucines.php) Se cambia el nombre del archivo a Exclusiones.php	(jako)
+- Mod#19	: (Autocarga.php) Se cambia la variable excluciones por exclusiones (Error de ortografía)	(jako)
+- Mod#20	: (CAplicacionWeb) Se depura el lalmado del controlador y se agregan nuevas funciones de obtención	(jako)
+- Mod#21	: (CComponenteAplicacion) Se agrega una función para cargar componentes	(jako)
+- Mod#22	: (CAplicacionWeb) Se habilita el llamado de componentes	(jako)
+- Mod#23	: (CMSesion) Se agrega una nueva función para saber si un atributo fue registrado	(jako)
 
-- Bug#1		: (CMRutas) [crearUrl()] Se arregla un bug al crear urls en la aplicación
-- Bug#2		: (CConectorMySql) [conectar] Se estaban recuperando mal las palabras acentuadas debido a que no se enviaba el charset a la conexión
-- Bug#3		: (CMySqlDriver) [ejecutarConsulta] Se estaban limpiando los datos del controlador al ejecutar una consultas
-- Bug#4		: (CControlador) Se corrige la redirección en caso de encontrarnos en un módulo
-- Bug#5		: (Sistema) Se corrigió un error en la función de resolver ruta, si la ruta era un solo elemento se repetía
-- Bug#6		: (CControlador) Se estaba priorizando la acción por defecto del controlador
+- Bug#1		: (CMRutas) [crearUrl()] Se arregla un bug al crear urls en la aplicación 	(jako)
+- Bug#2		: (CConectorMySql) [conectar] Se estaban recuperando mal las palabras acentuadas debido a que no se enviaba el charset a la conexión 	(jako)
+- Bug#3		: (CMySqlDriver) [ejecutarConsulta] Se estaban limpiando los datos del controlador al ejecutar una consultas 	(jako)
+- Bug#4		: (CControlador) Se corrige la redirección en caso de encontrarnos en un módulo 	(jako)
+- Bug#5		: (Sistema) Se corrigió un error en la función de resolver ruta, si la ruta era un solo elemento se repetía 	(jako)
+- Bug#6		: (CControlador) Se estaba priorizando la acción por defecto del controlador 	(jako)
 
-- New#1		: (CModulo) Se incorpora la clase base para todos los módulos
-- New#2		: (CComplemento) Se incorpora la posibilidad de crear componentes
-- New#3		: (CHtml) Se incorpora un asistente para la generación de html 
-- New#4		: (CBoot) Se incorpora un asistente para la generacdión de html con bootstrap3 
-- New#5		: (CComponenteUsuario) Se incorpora una clase plantilla para los componentes de usuario
-- New#6		: (CFormulario) Se incorpora una clase para crear formularios de manera más comoda con los modelos
-- New#7		: (CBForm) Se incorpora una clase para crear formularios con con estilso de bootstrap
+- New#1		: (CModulo) Se incorpora la clase base para todos los módulos	(jako)
+- New#2		: (CComplemento) Se incorpora la posibilidad de crear componentes	(jako)
+- New#3		: (CHtml) Se incorpora un asistente para la generación de html 	(jako)
+- New#4		: (CBoot) Se incorpora un asistente para la generacdión de html con bootstrap3 	(jako)
+- New#5		: (CComponenteUsuario) Se incorpora una clase plantilla para los componentes de usuario	(jako)
+- New#6		: (CFormulario) Se incorpora una clase para crear formularios de manera más comoda con los modelos	(jako)
+- New#7		: (CBForm) Se incorpora una clase para crear formularios con con estilso de bootstrap	(jako)
 
 ------------------------------
 Version 1.0.1 Enero 03 de 2016

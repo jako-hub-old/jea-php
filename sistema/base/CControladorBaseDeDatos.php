@@ -4,7 +4,7 @@
  * controladores de bases de datos
  * @package sistema.base
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright (c) 2015, jakop
  *
  * @property string $consulta
@@ -122,9 +122,17 @@ abstract class CControladorBaseDeDatos
      * despues de ejecutar una consulta
      */
     public function limpiar(){
-        $variables = get_object_vars($this);
-        foreach ($variables AS $nombre=>$valor){
+        $comandosALimpiar = [
+            '_join',
+            '_where',
+            '_group',
+            '_order',
+            '_limit',
+            '_offset',
+        ];
+        foreach ($comandosALimpiar AS $nombre){
             $this->$nombre = null;
         }
+        $this->_select = '*';
     }    
 }

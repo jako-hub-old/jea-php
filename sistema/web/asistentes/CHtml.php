@@ -149,4 +149,20 @@ final class CHtml {
                     $opciones
                 ));
     }
+    
+    /**
+     * Esta función permite convertir un array de modelos en un array clave
+     * valor, para así poderlo agregar como elementos de una lista
+     * @param CModelo[] $modelos
+     * @param string $valor
+     * @param string $texto
+     */
+    public static function modeloLista($modelos, $valor, $texto){
+        $elementos = [];
+        foreach($modelos AS $modelo){
+            $elementos[$modelo->$valor] = $modelo->$texto;
+        }
+        return $elementos;
+    }
+    
 }

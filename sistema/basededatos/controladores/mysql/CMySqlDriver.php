@@ -4,7 +4,7 @@
  * enfocada a funcionar solo con mysql
  * @package sistema.basesdedatos.controladores.mysql
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  */
 class CMySqlDriver extends CControladorBaseDeDatos{
@@ -32,6 +32,7 @@ class CMySqlDriver extends CControladorBaseDeDatos{
                 $registros[] = $datos;
             }
         }
+        $this->limpiar();
         return $registros;
     }
     
@@ -68,6 +69,7 @@ class CMySqlDriver extends CControladorBaseDeDatos{
      */
     private function ejecutarConsulta(){
         $resultado = CConectorMySql::ejecutarConsulta($this->_consulta);
+        $this->limpiar();
         return $resultado;
     }
     

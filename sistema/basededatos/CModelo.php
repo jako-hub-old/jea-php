@@ -3,7 +3,7 @@
  * Esta clase simplifica la funcionalidad del modelo base, haciendo más facil 
  * @package sistema.basededatos
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright (c) 2015, jakop
  */
 abstract class CModelo extends CBaseModelo{
@@ -28,6 +28,18 @@ abstract class CModelo extends CBaseModelo{
      */
     public function etiquetasAtributos(){
         return [];
+    }
+    
+    /**
+     * Esta función permite obtener el alias (Nombre de etiqueta) para un campo
+     * @param string $atributo
+     * @return string
+     */
+    public function obtenerEtiqueta($atributo = ''){
+        $atributos = $this->etiquetasAtributos();
+        return isset($atributos[$atributo])? 
+            $atributos[$atributo] : 
+            $atributo;
     }
     
     /**
