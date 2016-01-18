@@ -65,5 +65,11 @@
                 <p>Módulo</p>
             </a>
         </li>
+        <li>
+            <a href="<?php echo Sistema::apl()->crearUrl(['codegen/generador/logout']); ?>">
+                <?php echo CBoot::fa('sign-out', ['style'=>'color:red;']); ?>
+                <p>Salir</p>
+            </a>
+        </li>
     </ul>
 </div>

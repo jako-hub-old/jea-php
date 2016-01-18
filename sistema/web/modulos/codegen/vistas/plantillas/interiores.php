@@ -59,7 +59,7 @@ Sistema::apl()->mRecursos->registrarSelect2();
                                 <a href="<?php echo Sistema::apl()->crearUrl(['codegen/generador/modulo'])?>" class="list-group-item"><?php echo CBoot::fa('cubes'); ?> Generar <b>Módulos</b></a>
                             </div>
                             <div class="panel-body">
-                                <a href="#" class="btn btn-block btn-danger">
+                                <a href="<?php echo Sistema::apl()->crearUrl(['codegen/generador/logout']) ?>" class="btn btn-block btn-danger">
                                     <?php echo CBoot::fa('sign-out'); ?> Salir
                                 </a>
                             </div>

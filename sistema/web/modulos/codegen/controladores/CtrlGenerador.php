@@ -6,7 +6,7 @@
  */
 class CtrlGenerador extends CControlador{
     public $titulo = '';
-    public $descripcion = '';
+    public $descripcion = '';          
     /**
      * Clase que ayuda a escanear la base de datos;
      * @var CEsquema 
@@ -18,17 +18,64 @@ class CtrlGenerador extends CControlador{
      */
     private $generador;
     
-    public function inicializar() {
+    public function inicializar() {        
         $this->plantilla = 'interiores';
         $this->importarEsquema();
         $this->importarGenerador();
     }
     
+    public function antesDeIniciar() {
+        parent::antesDeIniciar();
+        $accion = $this->accion->ID;
+        # validamos si ya se inició sesión
+        if($accion != 'login' && !Sistema::apl()->mSesion->existeAtributo("codegen_log")){
+            $this->redireccionar('login');
+        }
+    }
+    
+    /**
+     * Esta función se encarga de mostrar la vista de inicio de sesión y manejar
+     * el logueo
+     */
+    public function accionLogin(){
+        $this->plantilla = "login";
+        $error = false;
+        
+        if(isset($this->_p['log'])){
+            $usr = Sistema::apl()->modulo->usuario;
+            $clv = Sistema::apl()->modulo->clave;
+            if($usr == $this->_p['log']['username'] && $clv == $this->_p['log']['password']){
+                Sistema::apl()->mSesion->setAtributo("codegen_log", $this->_p['log']['username']);
+                $this->redireccionar('inicio');
+            } else {
+                $error = true;
+            }
+        }
+        
+        $this->mostrarVista("login", ['error' => $error]);
+    }
+    
+    /**
+     * Esta función se encarga de cerrar la sesión
+     */
+    public function accionLogout(){        
+        if(Sistema::apl()->mSesion->existeAtributo("codegen_log")){
+            Sistema::apl()->mSesion->borrarAtributo("codegen_log");
+        }
+        $this->redireccionar('login');
+    }
+    
+    /**
+     * Esta función muestra la vista de inicio del generador de código
+     */
     public function accionInicio(){
         $this->plantilla = 'codeGen';
         $this->mostrarVista('inicio');
     }
     
+    /**
+     * Esta función muestra la vista para generar un modelo
+     */
     public function accionModelo(){
         $this->titulo = 'Generador de modelos ' . CBoot::fa('database');
         $this->descripcion = 'Genera modelos a partir de las tablas creadas en la base de datos a la cual estas conectado';
@@ -45,6 +92,9 @@ class CtrlGenerador extends CControlador{
         $this->mostrarVista('generarModelo', ['tablas' => $tablas]);
     }
     
+    /**
+     * Esta función muestra la vista para generar un crud
+     */
     public function accionCrud(){
         $this->titulo = 'Generador de CRUDS ' . CBoot::fa('list-alt');
         $this->descripcion = 'Genera un crud completo a partir de una tabla, esto agilizará el desarrollo de tu aplicación';
@@ -72,11 +122,15 @@ class CtrlGenerador extends CControlador{
         $this->mostrarVista('generarCrud', ['tablas' => $tablas, 'archivos' => $archivos, 'plantilla' => $plantilla]);
     }
     
+    /**
+     * Esta función muestra la vista para generar un módulo 
+     */
     public function accionModulo(){
         $this->titulo = 'Generador de módulos ' . CBoot::fa('cubes');
         $this->descripcion = 'Genera módulos que extiendan la funcionalidad de tu aplicación';
         if(isset($this->_p['crear-mod'])){
             $modulo = $this->generador->generarModulo($this->_p['nombre-mod']);
+            # si no hubo errores
             if(!$modulo["error"]){
                 # lógica en caso de que no se genere el módulo
                 Sistema::apl()->mSesion->setNotificacion("modErr", 'Ocurrió un error');
@@ -98,6 +152,10 @@ class CtrlGenerador extends CControlador{
         $this->mostrarVista('generarModulo', []);
     }
 
+    /**
+     * Esta función se encarga de importar la clase que permite describir las tablas
+     * @throws CExAplicacion
+     */
     private function importarEsquema(){
         $importacion = Sistema::importar('!web.modulos.codegen.clases.CEsquema');
         if(!$importacion){
@@ -106,6 +164,10 @@ class CtrlGenerador extends CControlador{
         $this->esquema = new CEsquema();
     }
     
+    /**
+     * Esta función importa el generador de código
+     * @throws CExAplicacion
+     */
     private function importarGenerador(){
         $importacion = Sistema::importar('!web.modulos.codegen.clases.CGenerador');
         if(!$importacion){
