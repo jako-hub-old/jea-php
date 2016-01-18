@@ -173,4 +173,9 @@ class CFormulario {
         }
         return $label;
     }
+    
+    public function mostrarErrores($modelo){
+        # pendiente por implementar
+        return $modelo;
+    }
 }

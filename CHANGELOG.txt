@@ -7,10 +7,22 @@ Versión 1.0.3
 - Mod#3		: (CBForm) Se mejora el funcionamiento de algnunas funciones (Jako)
 - Mod#4		: (CBoot) Se mejora el funcionamiento de algnunas funciones (Jako)
 - Mod#5		: (CFormulario) Se mejora el funcionamiento de algunas funciones (Jako)
+- Mod#6		: (CMySqlDriver) Función para ejecutar cualquier consulta
+- Mod#7		: (CModelo) [filtros] Se incorpora una función para definir los filtros que aplican en el modelo (Jako)
+- Mod#8		: (CBDComponente) Se incorporan dos nuevos atributos
+- Mod#9		: (CModulo) Se mejora la función obtenerInstancia y se agrega getRuta (Jako)
 
 - Bug#1		: (CMySqlDriver) Se conservan las condiciones de consultas anteriores	(Jako)
+- Bug#2		: (CModulo) No se estaba validando que los módulos fueran instancias de CModulo (Jako)
+- Bug#3		: (CConectorMySql) El charset por defecto no estaba bien (Jako)
+- Bug#4		: (CBaseModelo) Al enviar campos '' se producia un error, se cambia '' por null
 
 - New#1		: (CHtml) [modeloLista] Se incorpora una nueva función para convertir un array de modelos en una lista de elementos (Jako)
+- New#2		: (CControladorBaseDeDatos) [ejecutarComando] Se incorpora una nueva función para ejecutar cualquier consulta (Jako)
+- New#3		: (CFiltro) Se incorporan los filtros en los modelos para hacer validaciones antes de guardar un registro (Jako)
+- New#4		: (CMRecursos) [registrarSelect2] se incorpora una función para cargar la librería Select2 (Jako)
+- New#5		: (Dir: modulos) (Jako)
+- New#6		: (CodeGen) Se incorpora el módulo generador de código, con capacidad de generar modelos, cruds y otros módulos (Jako)
 
 -------------------------------
 Versión 1.0.2 Enero 13 de 2016

@@ -289,6 +289,21 @@ class CMRecursos {
     }
     
     /**
+     * Esta función permite registrar la libreria select 2
+     */
+    public function registrarSelect2(){
+        $this->registrarRecursoJS([
+            'alias' => 'sys-select2',
+            'ruta' => Sistema::resolverRuta('!sistema.recursos.frameworks.select2.js') . '/select2.js',
+            'pos' => CMRecursos::POS_HEAD,
+        ], true);
+        $this->registrarRecursoCSS([
+            'alias' => 'sys-select2',
+            'ruta' => Sistema::resolverRuta('!sistema.recursos.frameworks.select2.css') . '/select2.css',
+        ], true);
+    }
+    
+    /**
      * Esta función permite recorrer los archivos o depedencias de una librería
      * y moverlos a la aplicación, donde serán más faciles de llamar por medio
      * de la url

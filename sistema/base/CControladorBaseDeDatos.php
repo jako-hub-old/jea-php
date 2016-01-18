@@ -58,6 +58,7 @@ abstract class CControladorBaseDeDatos
             throw new CExAplicacion("La propiedad $nombre no esta definida o está protegida");
         }
     }
+    
     /**
      * Esta función es usada para setear el nombre de la tabla para 
      * las consultas
@@ -78,6 +79,9 @@ abstract class CControladorBaseDeDatos
     
     public abstract function eliminar();
     
+    public abstract function ejecutarComando($comando);
+
+
     /************************************************
      *        Funciones para armar criterios        *
      ************************************************/

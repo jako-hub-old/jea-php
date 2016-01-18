@@ -3,10 +3,25 @@
  * Esta clase simplifica la funcionalidad del modelo base, haciendo más facil 
  * @package sistema.basededatos
  * @author Jorge Alejandro Quiroz Serna (Jako) <alejo.jko@gmail.com>
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright (c) 2015, jakop
  */
 abstract class CModelo extends CBaseModelo{
+    /**
+     * Objeto encargado del filtro del modelo
+     * @var CFiltroModelo 
+     */
+    private $_filtro;
+    /**
+     * Indica si ocurrió un error al ejecutar los filtros
+     * @var boolean 
+     */
+    private $_error = false;
+    /**
+     * Lista de errores generados al ejecutar los filtros
+     * @var array
+     */
+    private $_errores = [];
     
     /**
      * Esta función debe ser implementada para devolver el nombre de la tabla
@@ -20,6 +35,14 @@ abstract class CModelo extends CBaseModelo{
      * columnas de la tabla representada
      */
     public abstract function atributos();
+    
+    /**
+     * Esta función puede ser sobreescrita para definir los filtros que aplican
+     * @return array
+     */
+    public function filtros(){
+        return [];
+    }
         
     /**
      * Esta función puede ser sobrecargada para retornar las etiquetas
@@ -77,6 +100,11 @@ abstract class CModelo extends CBaseModelo{
      * @return boolean
      */
     public function guardar(){
+        $this->cargarFiltro();
+        $this->_error = $this->_filtro->ejecutarFiltros();
+        # si ocurrió un error al ejecutar los filtros no guardamos
+        if($this->_error){return false;}
+        
         if($this->nuevo){
             return $this->_insertar();
         } else {
@@ -90,6 +118,40 @@ abstract class CModelo extends CBaseModelo{
      */
     public function eliminar(){
         return $this->_eliminar();
+    }    
+    
+    /**
+     * Esta función permite cargar la clase filtro designada al modelo
+     */
+    public function cargarFiltro(){
+        if($this->_filtro == null){
+            $this->_filtro = new CFiltro($this);
+        }
+    }
+    
+    /**
+     * Esta función permite setear el campo errores, este campo puede ser usado
+     * para almacenar un log de errores que ocurrieron durante un proceso con el modelo
+     * @param array $errores
+     */
+    public function setErrores($errores){
+        $this->_errores = $errores;
+    }
+    
+    /**
+     * Esta función devuelve el array con el log de errores del modelo
+     * @return array
+     */
+    public function getErrores(){
+        return $this->_errores;
+    }
+    
+    /**
+     * Esta función devuelve true si hubo algún error en el modelo o false si no
+     * @return boolean
+     */
+    public function hayError(){
+        return $this->_error;
     }
     
     /**

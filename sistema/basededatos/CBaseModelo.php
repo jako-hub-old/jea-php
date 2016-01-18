@@ -205,7 +205,7 @@ abstract class CBaseModelo {
         $criterios = [
             'columnas' => implode(', ', array_keys($columnas)),
             'valores' => implode(', ', array_map(
-                        function($val){ return  "'$val'"; },
+                        function($val){ return $val == ''? 'null' :  "'$val'"; },
                         $columnas
                     )),
         ];        
@@ -227,7 +227,7 @@ abstract class CBaseModelo {
         unset($columnas[$this->_pk]);
         $criterio = [
             'columnas' => implode(', ', array_map(
-                        function($k, $v){ return "$this->_alias.`$k`='$v'"; },
+                        function($k, $v){ return "$this->_alias.`$k`=" . ($v == ""? 'null' : "'$v'") . ""; },
                         array_keys($columnas),
                         $columnas
                     )),

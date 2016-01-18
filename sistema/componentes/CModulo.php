@@ -148,6 +148,10 @@ abstract class CModulo extends CComponenteAplicacion{
     private static function obtenerInstancia($config){
         $clase = $config['clase'];
         $instancia = new $clase($config['nombre'], $config['ruta']);
+        # la instancia cargada debe ser hija de CModulo
+        if(!$instancia instanceof CModulo){
+            throw new CExAplicacion("El módulo cargado no es valido, debe ser una instancia de CModulo");
+        }
         $instancia->asignarAtributos($config['config']);
         return $instancia;
     }
@@ -195,5 +199,13 @@ abstract class CModulo extends CComponenteAplicacion{
      */
     public function getControlador(){
         return $this->controlador;
+    }
+    
+    /**
+     * Esta función retorna la ruta donde se encuentra alojado el módulo
+     * @return string
+     */
+    public function getRuta(){
+        return $this->ruta;
     }
 }

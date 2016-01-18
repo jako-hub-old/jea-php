@@ -399,7 +399,7 @@ final class CBoot {
         }
         $opciones['class'] = "alert alert-".(isset($opciones['class'])? "$tipo ".$opciones['class'] : "$tipo") . " alert-dismissible";
         $opciones['role'] = 'alert';
-        $html = CHtml::e('div', $texto.$boton, $opciones);
+        $html = CHtml::e('div', $boton.$texto, $opciones);
         
         return $html;
     }

@@ -24,7 +24,7 @@ final class CConectorMySql extends CConectorBaseDeDatos
         $this->puerto = isset($conf['puerto'])? $conf['puerto'] : '3306';
         $this->servidor = isset($conf['servidor'])? $conf['servidor'] : '127.0.0.1';
         $this->baseDeDatos = isset($conf['bd'])? $conf['bd'] : '';
-        $this->charset = isset($conf['charset'])? $conf['charset'] : 'utf-8';
+        $this->charset = isset($conf['charset'])? $conf['charset'] : 'utf8';
     }
     
     public function __destruct() {

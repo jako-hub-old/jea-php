@@ -74,6 +74,20 @@ class CMySqlDriver extends CControladorBaseDeDatos{
     }
     
     /**
+     * Esta función permite ejecutar un comando cualquiera
+     * @param string $comando
+     * @return array
+     */
+    public function ejecutarComando($comando) {
+        CConectorMySql::ejecutarConsulta($comando);
+        $registros = [];
+        while($registro = CConectorMySql::traerSiguiente()){
+            $registros[] = $registro;
+        }
+        return $registros;
+    }
+    
+    /**
      * Esta función permite obtener el último Id guardado en mysql
      * @return int
      */
