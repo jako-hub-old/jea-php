@@ -35,6 +35,7 @@ final class CBoot {
             unset($opciones['group']);
             return CHtml::e('div',CHtml::boton($nombre, $opciones), ['class' => 'form-group']);
         }
+        
         return CHtml::boton($nombre, $opciones);
     }
     
@@ -113,6 +114,14 @@ final class CBoot {
         } else{            
             return CHtml::input($tipo, $valor, $opciones);
         }
+    }
+    
+    public static function fileInput($valor = '', $opciones = []){
+        return self::input('file', $valor, $opciones);
+    }
+    
+    public static function passwordField($valor = '', $opciones = []){
+        return self::input('password', $valor, $opciones);
     }
     
     public static function submit($nombre, $tipo = 'default', $opciones = []){
@@ -195,11 +204,22 @@ final class CBoot {
      */
     public static function textArea($valor = '', $opciones = []){
         $opciones['class'] = isset($opciones['class'])? "form-control ".$opciones['class'] : 'form-control';
-        if(isset($opciones['group']) && $opciones['group'] == true){
+//        if(isset($opciones['group']) && $opciones['group'] == true){
+//            unset($opciones['group']);
+//            return CHtml::e('div', CHtml::areaTexto($valor, $opciones),['class' => 'form-group']);
+//        }
+        
+        if(isset($opciones['group'])){
+            # construimos el label, también si hay opciones para el label se las pasamos
+            $label = isset($opciones['label'])? 
+                CHtml::e("label", $opciones['label'], isset($opciones['opcionesLabel'])? $opciones['opcionesLabel'] : []) :
+                "";
             unset($opciones['group']);
-            return CHtml::e('div', CHtml::areaTexto($valor, $opciones),['class' => 'form-group']);
-        }
-        return CHtml::areaTexto($valor, $opciones);
+            unset($opciones['label']);
+            return CHtml::e('div', $label.CHtml::areaTexto($valor, $opciones), ['class' => 'form-group']);
+        } else{            
+            return CHtml::areaTexto($valor, $opciones);
+        }        
     }
     
     /**

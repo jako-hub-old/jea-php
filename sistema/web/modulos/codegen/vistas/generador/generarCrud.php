@@ -22,23 +22,19 @@ $f = new CBForm([
 ]);
 $f->abrir();
 ?>
+<?php if(Sistema::apl()->mSesion->existeNotificacion("crud")): ?>
+<?php $not = Sistema::apl()->mSesion->getNotificacion("crud"); ?>
+<div class="alert alert-<?php echo $not['error']? 'danger' : 'success'; ?>">
+    <?php echo $not['msg']; ?>
+</div>
+<?php endif; ?>
+
 <div class="col-sm-7">
     
     <div class="form-group">
         <label>¿De que tabla generará el modelo?</label>
         <?php echo CBoot::select('', $tablas, ['name' => 'tabla', 'id' => 'tabla', 'defecto' => 'Seleccione una tabla', 'data-select-two' => 'true']); ?>
     </div>
-<!--    <div class="form-group">
-        <label>¿Sobreescribir el modelo si ya existe?</label>
-        <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-primary active">
-                <input type="radio" name="sobreescribir" id="override-yes" autocomplete="off" value="1" checked> Si
-            </label>        
-            <label class="btn btn-default">
-                <input type="radio" name="sobreescribir" id="override-no" autocomplete="off" value="0"> No
-            </label>
-        </div>
-    </div>-->
     <div class="form-group">
         <a class="btn btn-primary" role="button" data-toggle="collapse" href="#archivos" aria-expanded="false" aria-controls="archivos">
             Seleccionar archivos
@@ -61,13 +57,11 @@ $f->abrir();
     <div class="form-group">
         <?php echo CBoot::botonS(CBoot::fa('plus-circle') . ' Generar CRUD', ['id' => 'crear', 'name' => 'crear-crud', 'class' => 'btn-block', 'disabled' => 'disabled'])?>
     </div>
-    
 </div>
-<div id="warning" class="col-sm-5">
-    <?php echo CBoot::alert('Ya se realizó un CRUD para esta tabla, si genera el crud de nuevo se '
-        . 'sobreescribirá el anterior<br><br>' 
-        . '<strong>Nota: </strong> <br>'
-        . 'Puede elegir que archivos se generarán', 'warning', [], true); ?>
+<div id="warning" class="col-sm-5" style="display:none">
+    <?php echo CBoot::alert('<h3>Advertencia:</h3>Parece que algunos elementos del crud para esta tabla ya fueron generados, '
+        . 'te recomiendo revisar. <br>También puedes <strong>elegir</strong> los archivos que se generarán<br><br>',
+        'warning', [], false); ?>
 </div>
 <?php $f->cerrar(); ?>
 <script>
@@ -78,9 +72,28 @@ $f->abrir();
         jQuery("#tabla").change(function(){
             if(jQuery(this).val() === ""){
                 jQuery("#crear").attr("disabled", "disabled");
-            } else {
+            } else {                
+                revisarCrud(jQuery(this).val());
+            }
+        });        
+    });
+    
+    function revisarCrud(tabla){
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?r=codegen/generador/crud',
+            data: {
+                ajxreq : true,
+                tabla: tabla
+            },
+            success: function(obj){
+                if(obj.existe === true){
+                    jQuery("#warning").slideDown();
+                } else {
+                    jQuery("#warning").slideUp();
+                }
                 jQuery("#crear").removeAttr("disabled");
             }
         });
-    });
+    }
 </script>

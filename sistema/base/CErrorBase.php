@@ -87,7 +87,10 @@ abstract class CErrorBase {
         if($ruta === false){
             return false;
         }
-        
+        # limpiamos el buffer de lo que se haya impreso en pantalla
+        ob_end_clean();
+        # limpiamos los recursos agregados
+        Sistema::apl()->mRecursos->limpiarRecursos();        
         $this->contenido = $this->cargarVista($ruta);
         Sistema::apl()->mRecursos->incluirRecursos($this->contenido);
         echo $this->contenido;

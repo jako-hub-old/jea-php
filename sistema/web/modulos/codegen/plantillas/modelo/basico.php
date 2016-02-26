@@ -76,11 +76,38 @@ foreach($relaciones AS $relacion){
             ?>
         ];
     }
+    
+    /**
+     * Esta función permite listar todos los registros
+     * @param array $criterio
+     * @return <?php echo $nClase . "\n" ?>
+     */
+    public function listar($criterio = array()) {
+        return parent::listar($criterio);
+    }
+    
+    /**
+     * Esta función permite obtener un registro por su primary key
+     * @param int $pk
+     * @return <?php echo $nClase . "\n" ?>
+     */
+    public function porPk($pk) {
+        return parent::porPk($pk);
+    }
+    
+    /**
+     * Esta función permite obtener el primer registro
+     * @param array $criterio
+     * @return <?php echo $nClase . "\n" ?>
+     */
+    public function primer($criterio = array()) {
+        return parent::primer($criterio);
+    } 
 
     /**
      * Esta función retorna una instancia del modelo <?php echo "$tabla\n" ?>
      * @param string $clase
-     * @return C<?php echo ucfirst($nTabla) ?>
+     * @return <?php echo $nClase . "\n" ?>
      */
     public static function modelo($clase = __CLASS__) {
         return parent::modelo($clase);

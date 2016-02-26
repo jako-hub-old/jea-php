@@ -36,8 +36,8 @@ class Ctrl<?php echo $nTabla; ?> extends CControlador{
      */
     public function accionEditar($pk){
         $modelo = $this->cargarModelo($pk);
-        if(isset($this->_p['Items'])){
-            $modelo->atributos = $this->_p['Items'];
+        if(isset($this->_p['<?php echo $nTabla; ?>'])){
+            $modelo->atributos = $this->_p['<?php echo $nTabla; ?>'];
             if($modelo->guardar()){
                 # lógica para guardado exitoso
                 $this->redireccionar('inicio');

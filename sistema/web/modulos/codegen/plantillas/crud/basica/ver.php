@@ -7,7 +7,7 @@ $pk = $modelo->getPk();
         <h3>Ver <?php echo $nTabla; ?></h3>
     </div>
     <div class="form-group">
-        <a class="btn btn-primary" href="<?php echo Sistema::apl()->crearUrl([lcfirst($nTabla) . '/inicio'])?>">Listar</a>
+        <a class="btn btn-primary" href="<?php echo "<?php echo Sistema::apl()->crearUrl(['" . lcfirst($nTabla) . "/inicio'])?>"; ?>">Listar</a>
     </div>
     <div class="panel panel-primary">
         <div class="panel-heading text-center">

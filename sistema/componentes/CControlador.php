@@ -142,6 +142,13 @@ abstract class CControlador extends CComponenteAplicacion{
         Sistema::fin();
     }
     
+    public static function redireccionarA($controlador, $accion, $parametros = []){
+        $url = Sistema::apl()->crearUrl(array_merge(["$controlador/$accion"], $parametros));
+        header("location:".$url);
+        # tenemos que finalizar la ejecución de la aplicación
+        Sistema::fin();
+    }
+    
     /**
      * Esta función permite mostrar una vista
      * @param string $vista
@@ -267,5 +274,9 @@ abstract class CControlador extends CComponenteAplicacion{
      */
     public function perteneceAModulo($b){
         $this->perteneceAModulo = $b;
+    }
+    
+    public function limpiarContenido(){
+        $this->contenido = "";
     }
 }

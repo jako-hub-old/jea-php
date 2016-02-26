@@ -55,6 +55,11 @@ class CMRecursos {
      * @var string 
      */
     private $fuenteRecursos;
+    /**
+     * etiquetas meta registradas
+     * @var array 
+     */
+    private $metas = [];
     
     public function __construct() {
         $this->rutaRecursos = Sistema::resolverRuta('!raiz.recursos');
@@ -209,8 +214,9 @@ class CMRecursos {
         $shead = $scriptshead != ""? '<script type="text/javascript">'.$scriptshead.'</script>' : '';
         $sready = $scriptsready != ""? '<script type="text/javascript">jQuery(function(){'.$scriptsready.'});</script>' : '';
         $ehead = $estiloshead != ""? '<style>'.$estiloshead.'</style>' : '';
+        $metas = implode('', $this->metas);
         $html = str_replace('</body>', $body.$sbody.$sready.'</body>', 
-                str_replace('</head>', $head.$ehead.$shead.'</head>', $html)
+                str_replace('</head>', $head.$ehead.$shead.$metas.'</head>', $html)
             );
     }
     
@@ -380,5 +386,32 @@ class CMRecursos {
      */
     public function getAlias(){
         return $this->aliasRegistrados;
+    }
+    
+    /**
+     * Esta función permite limpiar los recursos cargados en la aplicación (cargados
+     * en memoria)
+     */
+    public function limpiarRecursos(){
+        $this->recursosRegistrados = [
+            'js' => [],
+            'css' => []
+        ];
+        $this->recursosPrimarios = [
+            'js' => [],
+            'css' => []
+        ];
+    }
+    
+    public function registrarMeta($nombre, $contenido, $otros = []){
+        $otros['name'] = $nombre;
+        $otros['content'] = $contenido;        
+        $this->metas[] = CHtml::e('meta','', $otros, false);
+    }
+    
+    public function openGraph($metas){
+        foreach($metas AS $opciones){            
+            $this->metas[] = CHtml::e('meta','', $opciones, false);
+        }
     }
 }

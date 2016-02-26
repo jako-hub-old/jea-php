@@ -237,6 +237,7 @@ class CGenerador {
      * @return boolean
      */
     private function generarVistas($tabla, $archivos, $rutaPlantilla, $rutaDestino){
+        Sistema::importar("!aplicacion.modelos.$tabla");
         $modelo = new $tabla();
         $error = false;
         

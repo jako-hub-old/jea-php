@@ -46,12 +46,18 @@ class CMRutas {
     /**
      * Manera corta del archivo llamado en la url
      * @var string 
-     */
+     */    
     private $peticionUri;
+    /**
+     * Puerto a travez del cual se establece la conexión
+     * @var string
+     */
+    private $puerto = '80';
     private $server;
     private $get;
     
     public function __construct() {
+//        var_dump($_SERVER);exit();
         /**
          * En algunos servidores no se defininen algunas variables, por lo
          * que podría explotar este manejador si no encuentra dichas variables
@@ -80,6 +86,7 @@ class CMRutas {
         $this->emailAdmin = $sc['SERVER_ADMIN'];
         $this->scriptSolicitado = $sc['SCRIPT_FILENAME'];
         $this->peticionUri = $sc['REQUEST_URI'];
+        $this->puerto = $sc['SERVER_PORT'];
     }
     
     /**
@@ -87,10 +94,11 @@ class CMRutas {
      * @return string
      */
     public function getUrlBase(){
-        $url = $this->esquemaSolicitado.'://'.
-                $this->nombreServidor.
-                str_replace('index.php', '', $this->peticionUri);
-        
+        $carpeta = dirname(str_replace($this->raizServidor, '', $this->scriptSolicitado));
+        $servidor = $this->nombreServidor . ($this->puerto == '80'? '' : ":$this->puerto");
+        $tmp = $servidor. '/' .
+                str_replace('index.php', '', $carpeta) . '/';
+        $url = $this->esquemaSolicitado.'://'.preg_replace("/\/{2,}/", '/', $tmp);
         /**********************************************************
          *  si hay parametros en get hay que limpiarlos de la url *
          **********************************************************/

@@ -19,7 +19,7 @@ class CtrlGenerador extends CControlador{
     private $generador;
     
     public function inicializar() {        
-        $this->plantilla = 'interiores';
+        $this->plantilla = 'generadores';
         $this->importarEsquema();
         $this->importarGenerador();
     }
@@ -83,13 +83,32 @@ class CtrlGenerador extends CControlador{
         $tablas = $this->esquema->obtenerTablas();
         
         if(isset($this->_p['crear-modelo'])){
-            $modelo = $this->generador->generarModelo($this->_p['tabla']);
-            if(!$modelo){
-                # logica para el error del modelo generado
-            }
+            $this->generarModelo();
+            $this->redireccionar('modelo');
         }
         
         $this->mostrarVista('generarModelo', ['tablas' => $tablas]);
+    }
+    
+    private function generarModelo(){
+        # removemos el prefijo
+        $t = str_replace($this->esquema->getPrefijo(), '', $this->_p['tabla']);
+        $nombre = str_replace(' ', '', ucwords(str_replace('_', ' ', $t)));
+        $msg = "";
+        $sobreescribir = $this->_p['sobreescribir'] == 1;
+        $error = false;
+        if(!$sobreescribir && file_exists(Sistema::resolverRuta("!aplicacion.modelos"). DS . "$nombre.php")){
+            $msg = "El modelo ya existe";
+        } else {
+            $modelo = $this->generador->generarModelo($this->_p['tabla']);
+            if(!$modelo){
+                $msg = "Ocurrió un error al generar el modelo";
+                $error = true;
+            } else {
+                $msg = "Se generó correctamente el modelo";
+            }
+        }
+        Sistema::apl()->mSesion->setNotificacion("modelo", ['error' => $error, 'msg' => $msg]);
     }
     
     /**
@@ -97,29 +116,54 @@ class CtrlGenerador extends CControlador{
      */
     public function accionCrud(){
         $this->titulo = 'Generador de CRUDS ' . CBoot::fa('list-alt');
-        $this->descripcion = 'Genera un crud completo a partir de una tabla, esto agilizará el desarrollo de tu aplicación';
-        
-        
+        $this->descripcion = 'Genera un crud completo a partir de una tabla, esto agilizará el desarrollo de tu aplicación';                
         $plantilla = "basica";
+        
+        if(isset($this->_p['ajxreq']) && $this->_p['ajxreq'] == true){
+            $this->validarCrud();
+        }
         
         if(isset($this->_p['crear-crud'])){
             $plantilla = isset($this->_p['plantilla'])? $this->_p['plantilla'] : 'basica';
             $archivos = isset($this->_p['archivos'])? $this->_p['archivos'] : [];
             
             $crud = $this->generador->generarCrud($this->_p['tabla'], $archivos, $plantilla);
-            if(!$crud){
-                # logica para el crud no generado
-                echo "Ocurrió un error!";
-                Sistema::fin();
-            } else {
-                $this->redireccionar('crud');
+            $msg = "Ocurrió un error al generar el crud";
+            $error = true;
+            if($crud){
+                $t = str_replace($this->esquema->getPrefijo(), '', $this->_p['tabla']);
+                $nombre = str_replace(' ', '', ucwords(str_replace('_', ' ', $t)));                
+                $link = CHtml::link("¿Deseas echar un vistazo?", [lcfirst($nombre).'/inicio'], ['target' => '_blank']);
+                $msg = "Se generó correctamente el crud  $link";
+                $error = false;
             }
+            
+            Sistema::apl()->mSesion->setNotificacion("crud", [
+                'error' => $error,
+                'msg' => $msg,
+            ]);
+            $this->redireccionar('crud');
         }
         
         $tablas = $this->esquema->obtenerTablas();
         $archivos = $this->generador->obtenerArchivosCrud($plantilla);
         
         $this->mostrarVista('generarCrud', ['tablas' => $tablas, 'archivos' => $archivos, 'plantilla' => $plantilla]);
+    }
+    
+    private function validarCrud(){
+        $t = str_replace($this->esquema->getPrefijo(), '', $this->_p['tabla']);
+        $nombre = str_replace(' ', '', ucwords(str_replace('_', ' ', $t)));
+        $modelo = file_exists(Sistema::resolverRuta("!aplicacion.modelos") . DS . "$nombre.php");
+        $controlador = file_exists(Sistema::resolverRuta("!aplicacion.controladores") . DS . "Ctrl$nombre.php");
+        $vistas = is_dir(Sistema::resolverRuta("!aplicacion.vistas." . lcfirst($nombre)));
+        
+        header("Content-type: application/json");
+        echo json_encode([
+            'existe' => $modelo || $controlador || $vistas
+        ]);
+        
+        Sistema::fin();
     }
     
     /**

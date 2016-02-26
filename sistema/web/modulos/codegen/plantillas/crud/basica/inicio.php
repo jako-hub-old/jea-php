@@ -10,7 +10,7 @@ $pk = $modelo->getPk();
 <div class="col-sm-8">
     
     <div class="form-group">
-        <a class="btn btn-primary" href="<?php echo "<?php echo Sistema::apl()->crearUrl(['items/crear'])?>"; ?>">Crear nuevo</a>
+        <a class="btn btn-primary" href="<?php echo "<?php echo Sistema::apl()->crearUrl(['" . lcfirst($nTabla) . "/crear'])?>"; ?>">Crear nuevo</a>
     </div>
     
     <table class="table table-bordered table-striped table-hover">

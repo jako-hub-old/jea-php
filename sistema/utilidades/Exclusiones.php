@@ -16,4 +16,5 @@ return array(
     'nbproject',
     'CAplicacionWeb.php',
     'coms',
+    'terceros',
 );

@@ -132,6 +132,17 @@ class CFormulario {
         return CHtml::lista($valor, $elementos, $opcHtml);
     }
         
+    public function campoArchivo($modelo = null, $atributo = '', $opciones = []){
+        $opcHtml = $this->obtenerOpciones($modelo, $atributo, $opciones);
+        $valor = $modelo->$atributo;
+        return CHtml::input('file', $valor, $opcHtml);
+    }
+    
+    public function campoPassword($modelo = null, $atributo = '', $opciones = []){
+        $opcHtml = $this->obtenerOpciones($modelo, $atributo, $opciones);
+        $valor = $modelo->$atributo;
+        return CHtml::input('password', $valor, $opcHtml);
+    }
     
     /**
      * 
@@ -148,7 +159,7 @@ class CFormulario {
             throw new CExAplicacion("El atributo no puede estar vacio");
         }
         # obtenemos el nombre de la tabla
-        $nModelo = $modelo->tabla();
+        $nModelo = str_replace(' ', '', ucwords(str_replace('_', ' ', $modelo->tabla())));
         $opcBasicas = [
             'name' => ucfirst($nModelo)."[$atributo]",
             'id' => $nModelo."_".$atributo,

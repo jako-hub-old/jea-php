@@ -4,7 +4,7 @@
  * 
  * @package sistema.web
  * @author Jorge Alejandro Quiroz Serna (jako) <alejo.jko@gmail.com>
- * @version 1.0.4
+ * @version 1.0.5
  * @copyright (c) 2015, jakop
  */
 /**
@@ -25,12 +25,15 @@
  * @property string $nombreModulo Nombre del módulo invocado
  * @property CBDComponente $bd Componente encargado de la conexión de base de datos
  * @property CComponenteUsuario $usuario Componente destinado al inicio de sesión de usuarios
+ * @property boolean $modoProduccion Bandera que indica si la aplicación se encuentra en modo producción
+ * @property boolean $apacheRewrite
  */
 
 final class CAplicacionWeb {
     private $ID;
     private $nombre;
     private $charset = 'utf-8';    
+    private $timezone = 'America/Bogota';
     private $rutaConf;
     private $configuraciones = [];
     private $rutaPlantillas;
@@ -43,6 +46,9 @@ final class CAplicacionWeb {
     private $nombreControlador = 'principal';
     private $nombreAccion = 'inicio';
     private $nombreModulo = null;
+    private $modoProduccion = false;
+    private $apacheRewrite = false;
+    
     /***************************************************************
      *  Manejadores                                                *
      ***************************************************************
@@ -60,11 +66,17 @@ final class CAplicacionWeb {
      *  Componentes                                                *
      ***************************************************************/
     private $bd;
+    
     /**
      * array con todos los componentes de la aplicación
      * @var array 
      */
     private $_componentes = [];
+    /**
+     * esta array contiene todas las extensiones cargadas en la aplicación
+     * @var array 
+     */
+    private $_extensiones = [];
    
     private function __construct($rutaConfiguraciones){
         $this->rutaConf = $rutaConfiguraciones;
@@ -239,6 +251,8 @@ final class CAplicacionWeb {
      */
     private function iniciarConfiguraciones(){
         $this->cargarTema();
+        # configuramos la zona de tiempo
+        date_default_timezone_set($this->timezone);
     }
     
     /*************************************
@@ -312,6 +326,8 @@ final class CAplicacionWeb {
         # verificamos si el atributo invocado esta registrado en los componentes
         if($this->buscarEnComponentes($nombre)){
             return $this->_componentes[$nombre];
+        } else if($this->buscarEnExtensiones($nombre)){
+            return $this->_extensiones[$nombre];
         } else if(method_exists($this, 'get'.  ucfirst($nombre))){
             return $this->{'get'.  ucfirst($nombre)}();
         }
@@ -325,6 +341,9 @@ final class CAplicacionWeb {
      */
     private function buscarEnComponentes($nombre){        
         $coms = $this->getConfiguracion("componentes");
+        # si no hay componentes retornamos
+        if($coms === false){ return false; }
+        
         # si encontramos el componente lo cargamos
         if(key_exists($nombre, $this->_componentes)){
             return true;
@@ -335,6 +354,35 @@ final class CAplicacionWeb {
         }
         
         return false;
+    }
+    
+    private function buscarEnExtensiones($nombre){
+        $ext = $this->getConfiguracion("extensiones");
+        if($ext === false){ return false; }
+        
+        if(key_exists($nombre, $this->_extensiones)){ return true; }
+        
+        if(!key_exists($nombre, $ext)){
+            return false;
+        }        
+        
+        if(!file_exists(Sistema::resolverRuta($ext[$nombre]['ruta'].'.'.$ext[$nombre]['clase'], true))){
+            return false;
+        }
+        
+        Sistema::importar($ext[$nombre]['ruta'].'.'.$ext[$nombre]['clase']);
+        
+        $extension = new $ext[$nombre]['clase']();
+        
+        if(!$extension instanceof CExtensionWeb){ throw new CExAplicacion("La extensión no es valida"); }
+        
+        unset($ext[$nombre]['ruta'], $ext[$nombre]['clase']);
+        
+        $extension->setAtributos($ext[$nombre]);
+        
+        $this->_extensiones[$nombre] = $extension;
+        
+        return true;
     }
     
     /***************************************************************
@@ -401,6 +449,13 @@ final class CAplicacionWeb {
         return $this->mSesion;
     }
     
+    public function getMCorreos(){
+        if($this->mCorreos == null){
+            $this->mCorreos = new CMCorreos();
+        }
+        return $this->mCorreos;
+    }
+    
     /**
      * Esta función retorna el manejador de rutas
      * @return CMRutas
@@ -460,5 +515,25 @@ final class CAplicacionWeb {
      */
     public function getModulo(){
         return $this->modulo;
+    }
+    
+    /**
+     * Esta función retorna si la aplicación está en modo producción o no
+     * @return string
+     */
+    public function getModoProduccion(){
+        return $this->modoProduccion;
+    }
+    
+    /**
+     * Esta función retorna el controlador cargado en la aplicación
+     * @return CControlador
+     */
+    public function getControlador(){
+        return $this->controlador;
+    }
+    
+    public function getApacheRewrite(){
+        return $this->apacheRewrite;
     }
 }

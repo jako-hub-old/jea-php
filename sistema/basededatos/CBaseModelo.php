@@ -195,6 +195,21 @@ abstract class CBaseModelo {
     }
     
     /**
+     * Esta función permite contar los registros de una tabla
+     * @param array $criterio
+     * @return int
+     */
+    protected function _contar($criterio = []){
+        $criterio['select'] = 'COUNT(*) AS total';
+        $this->setCriterios($criterio);
+        $registros = $this->ejecutar();
+        if(count($registros) > 0){
+            return intval($registros[0]['total']);
+        }
+        return 0;
+    }
+    
+    /**
      * Esta función permite preparar y ejecutar la consulta para la inserción de 
      * un nuevo registro
      * @return boolean

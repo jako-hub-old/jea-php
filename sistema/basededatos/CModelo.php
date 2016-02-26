@@ -75,6 +75,15 @@ abstract class CModelo extends CBaseModelo{
     }
     
     /**
+     * Esta función permite obtener el conteo de los registros en la tabla
+     * @param array $criterios
+     * @return int
+     */
+    public function contar($criterios = []){
+        return $this->_contar($criterios);
+    }
+    
+    /**
      * Esta función retorna una instancia del modelo 
      * @param array $criterio
      * @return CModelo
@@ -94,12 +103,20 @@ abstract class CModelo extends CBaseModelo{
         $criterio['where'] = "$this->pk='$pk'";
         $resultados = $this->_encontrarTodos($criterio);
         return count($resultados) > 0? $resultados[0] : null;
-    }
+    }    
+    
+    public function antesDeGuardar(){}
+    
+    public function antesDeEliminar(){}    
+    
     /**
      * Esta función permite guardar un modelo, si el modelo ya existe se actualiza
      * @return boolean
      */
     public function guardar(){
+        # se puede aprovechar esta función para procesar los campos antes de guardar
+        $this->antesDeGuardar();
+        
         $this->cargarFiltro();
         $this->_error = $this->_filtro->ejecutarFiltros();
         # si ocurrió un error al ejecutar los filtros no guardamos
@@ -117,6 +134,7 @@ abstract class CModelo extends CBaseModelo{
      * @return boolean
      */
     public function eliminar(){
+        $this->antesDeEliminar();
         return $this->_eliminar();
     }    
     

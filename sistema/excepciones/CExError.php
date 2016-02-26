@@ -24,8 +24,20 @@ class CExError extends CErrorBase{
             'limiteRastreo' => 10,
             'titulo' => 'Error',
         ));
-        $this->mostrarError('error');
+        $this->mostrarVista();        
     }
+    
+    private function mostrarVista(){
+        $produccion = Sistema::apl()->modoProduccion;        
+        if(!$produccion){
+            $this->mostrarError('error');            
+        } else {
+            CControlador::redireccionarA('error', '500');
+//            $this->mostrarError('produccion');
+        }
+        
+    }
+    
     /**
      * Esta función retorna el tipo de error generado
      * @param int $no

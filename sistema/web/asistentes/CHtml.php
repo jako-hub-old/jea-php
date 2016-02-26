@@ -165,4 +165,15 @@ final class CHtml {
         return $elementos;
     }
     
+    /**
+     * Esta función permite crear una etiqueta de imagen
+     * @param string $src
+     * @param array $opciones
+     * @return string
+     */
+    public static function img($src, $opciones = []){
+        $opciones['src'] = $src;
+        return self::e('img', '', $opciones, false);
+    }
+    
 }

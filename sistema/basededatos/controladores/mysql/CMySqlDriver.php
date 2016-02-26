@@ -19,12 +19,12 @@ class CMySqlDriver extends CControladorBaseDeDatos{
     public function consultar() {
         $this->_consulta = "SELECT $this->_select "
                 . "FROM $this->_tabla AS $this->_alias"
-                . (isset($this->_join)? $this->_join : " ")
+                . (isset($this->_join)? " ".$this->_join : " ")
                 . (isset($this->_where)? "WHERE ".$this->_where . " " : "")
-                . (isset($this->_group)? "GROUP BY " . $this->_group . " " : "")
-                . (isset($this->_order)? "ORDER BY " . $this->_order . " " : "")
-                . (isset($this->_limit)? "LIMIT " . $this->_limit . " " : "")
-                . (isset($this->_offset)? "OFFSET " . $this->_offset . " " : "");
+                . (isset($this->_group)? " GROUP BY " . $this->_group . " " : "")
+                . (isset($this->_order)? " ORDER BY " . $this->_order . " " : "")
+                . (isset($this->_limit)? " LIMIT " . $this->_limit . " " : "")
+                . (isset($this->_offset)? " OFFSET " . $this->_offset . " " : "");
         $registros = [];        
         CConectorMySql::ejecutarConsulta($this->_consulta);
         while($datos = CConectorMySql::traerSiguiente()){

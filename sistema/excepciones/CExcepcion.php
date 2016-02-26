@@ -20,6 +20,13 @@ class CExcepcion extends CErrorBase{
             'titulo' => property_exists($e, 'titulo')? $e->titulo : 'Excepción',
         ));
         $this->excepcion = $e;
-        $this->mostrarError('excepcion');
+        $produccion = Sistema::apl()->modoProduccion;
+        var_dump($produccion);exit();
+        if(!$produccion){
+            $this->mostrarError('excepcion');
+        } else {
+            CControlador::redireccionarA('error', '500');
+//            $this->mostrarError('produccion');
+        }
     }
 }

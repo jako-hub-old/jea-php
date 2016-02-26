@@ -12,7 +12,7 @@ foreach ($columnas AS $col){
     if($col == $pk){
         continue;
     }
-    echo "\t<?php echo \$formulario->campoTexto(\$modelo, '$col', ['group' => true$autoFocus]) ?>\n";
+    echo "<?php echo \$formulario->campoTexto(\$modelo, '$col', ['label' => true, 'group' => true$autoFocus]) ?>\n";
     $autoFocus = "";
 }
 ?>

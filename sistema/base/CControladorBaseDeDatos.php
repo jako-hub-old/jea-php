@@ -45,6 +45,10 @@ abstract class CControladorBaseDeDatos
     protected $_limit;
     protected $_offset;
     
+    public function __construct() {
+        $this->_select = "$this->_alias.*";
+    }
+    
     public function __set($nombre, $valor){
         if(method_exists($this, $nombre)){
             $this->$nombre($valor);
