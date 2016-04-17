@@ -128,7 +128,7 @@ class CArchivoCargado {
      * Nota: Esta función solo debe llamarse despues de guardar una imagen, 
      * no funciona con archivos
      * @param string $rutaDestino
-     * @param array $config
+     * @param array $config pre, tamanio, x, y, tipo, calidad
      * @return boolean
      */
     public function thumbnail($rutaDestino = "", $config = []){

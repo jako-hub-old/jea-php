@@ -194,7 +194,10 @@ final class CBoot {
     public static function passwordAddOn($valor = '', $opciones = []){
         return self::inputAddOn($valor, 'password', $opciones);
     }
-
+    
+    public static function fieldAddOn($valor = '', $tipo = 'text', $opciones = []){
+        return self::inputAddOn($valor, $tipo, $opciones);
+    }
 
     /**
      * Esta función crea un textarea con estilos de bootstrap
@@ -204,10 +207,6 @@ final class CBoot {
      */
     public static function textArea($valor = '', $opciones = []){
         $opciones['class'] = isset($opciones['class'])? "form-control ".$opciones['class'] : 'form-control';
-//        if(isset($opciones['group']) && $opciones['group'] == true){
-//            unset($opciones['group']);
-//            return CHtml::e('div', CHtml::areaTexto($valor, $opciones),['class' => 'form-group']);
-//        }
         
         if(isset($opciones['group'])){
             # construimos el label, también si hay opciones para el label se las pasamos

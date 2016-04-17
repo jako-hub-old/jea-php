@@ -22,6 +22,20 @@ class CBForm extends CFormulario{
         return CHtml::e('div', $label.$error.$input, ['class' => 'form-group']);
     }
     
+    public function inputAddon($modelo = null, $atributo = '', $tipo = 'texto', $opciones = array(), $addOn = '', $pre = false){
+        $opHtml = $this->obtenerOpciones($modelo, $atributo, $opciones);
+        $label = $this->obtenerEtiqueta($opHtml);
+        $error = $this->obtenerError($modelo->getErrores(), $atributo);
+        $icon = CBoot::fa($addOn);
+        if($pre) {
+            $opHtml['pre'] = $icon;
+        } else {
+            $opHtml['pos'] = $icon;
+        }
+        $input = CBoot::fieldAddOn($modelo->$atributo, $tipo, $opHtml);
+        return CHtml::e('div', $label.$error.$input, ['class' => 'form-group']);
+    }
+    
     public function campoArchivo($modelo = null, $atributo = '', $opciones = array()) {
         $opHtml = $this->obtenerOpciones($modelo, $atributo, $opciones);
         $label = $this->obtenerEtiqueta($opHtml);

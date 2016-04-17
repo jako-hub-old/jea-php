@@ -21,12 +21,12 @@ class CExcepcion extends CErrorBase{
         ));
         $this->excepcion = $e;
         $produccion = Sistema::apl()->modoProduccion;
-        var_dump($produccion);exit();
+        
         if(!$produccion){
             $this->mostrarError('excepcion');
         } else {
             CControlador::redireccionarA('error', '500');
-//            $this->mostrarError('produccion');
+            $this->mostrarError('produccion');
         }
     }
 }
